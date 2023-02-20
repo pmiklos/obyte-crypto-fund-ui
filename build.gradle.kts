@@ -43,3 +43,13 @@ kotlin {
         }
     }
 }
+
+
+tasks.register("gh-pages", Copy::class) {
+    dependsOn("assemble")
+
+    mkdir("$buildDir/gh-pages")
+    destinationDir = file("$buildDir/gh-pages")
+
+    from(file("build/distributions"))
+}
