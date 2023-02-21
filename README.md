@@ -1,6 +1,7 @@
 # User Interface for the Obyte Decentralized Crypto Fund
 
-NOTE: The current version is in early development and only shows mock data.
+NOTE: The current version is in early development and only shows mock data,
+see [live demo page](https://pmiklos.github.io/obyte-crypto-fund-ui).
 
 ## Run the app
 
