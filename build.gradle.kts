@@ -1,11 +1,8 @@
 import org.jetbrains.compose.compose
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
-    distribution
 }
 
 group "app.obyte.cryptofund"
@@ -45,22 +42,3 @@ kotlin {
     }
 }
 
-val jsBrowserDistribution by tasks.getting
-
-distributions {
-    create("githubPages") {
-        distributionBaseName.set("github-pages")
-        contents {
-            from (jsBrowserDistribution)
-            exclude {
-                it.name.startsWith("github-pages")
-            }
-        }
-    }
-}
-
-val githubPagesDistTar by tasks.getting(Tar::class) {
-    dependsOn(jsBrowserDistribution)
-    compression = Compression.GZIP
-    archiveExtension.set("tar.gz")
-}

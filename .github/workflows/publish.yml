@@ -21,11 +21,9 @@ jobs:
         run: ./gradlew clean assemble
 
       - name: Upload Github Pages
-        uses: actions/upload-artifact@main
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: github-pages
-          path: ./build/distributions/github-pages.tar.gz
-          retention-days: 1
+          path: ./build/distributions
 
   deploy:
     needs: build
