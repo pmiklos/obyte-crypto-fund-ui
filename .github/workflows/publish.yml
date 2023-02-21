@@ -18,10 +18,11 @@ jobs:
           key: gradle
 
       - name: Build
-        run: ./gradlew clean assemble gh-pages -Pgpr.user=pmiklos -Pgpr.key=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew clean assemble
 
-      - name: Publish
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload Github Pages
+        uses: actions/upload-artifact@main
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/gh-pages
+          name: github-pages
+          path: ./build/distributions/github-pages.tar.gz
+          retention-days: 1
