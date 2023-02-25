@@ -1,5 +1,9 @@
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import navigation.NavHost
+import navigation.Navigator
+import navigation.Screen
+import funddetails.FundDetails
 import fundlist.FundList
 import fundlist.FundListViewModel
 import fundlist.FundType
@@ -36,8 +40,6 @@ class Application(override val coroutineContext: CoroutineContext = Job()) : Cor
         val getFundTypesUseCase = GetFundTypesUseCase(fundReleaseRepository)
         val getFundsUseCase = GetFundsUseCase(fundRepository)
 
-        val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase, this)
-
         renderComposable(rootElementId = "root") {
             val walletAddress = remember { mutableStateOf("") }
 
@@ -45,12 +47,23 @@ class Application(override val coroutineContext: CoroutineContext = Job()) : Cor
                 WalletWidget(walletAddress)
             }
             Main {
-                FundList(fundListViewModel)
+                val navigator = remember { Navigator(root = Screen.Home) }
+                val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase, navigator, this@launch)
+
+                NavHost(navigator) {
+                    composable(Screen.Home) {
+                        FundList(fundListViewModel)
+                    }
+
+                    composable(Screen.Details) {
+                        FundDetails(navigator)
+                    }
+                }
             }
         }
     }
-
 }
+
 
 object HardCodedTypeRepository : FundTypeRepository {
     override suspend fun getFundTypes(): List<FundType> = listOf(
