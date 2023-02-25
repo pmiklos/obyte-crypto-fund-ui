@@ -17,7 +17,7 @@ class Navigator(private val root: Navigable) {
     }
 
     private fun routeOf(url: String, defaultRoute: String): Route {
-        val path = url.substringAfter("#").split("/")
+        val path = url.substringAfter("#", "").split("/")
         val route = if (path.first().isEmpty()) defaultRoute else path.first()
         val param = if (path.size > 1) path[1] else null
         return Route(route, param)
