@@ -1,17 +1,17 @@
 package obyte
 
 import fundlist.Fund
-import fundlist.FundRepository
+import fundlist.FundListRepository
 import fundlist.FundType
 import fundlist.Portfolio
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class ObyteFundRepository(
+class ObyteFundListRepository(
     private val baseAgentService: BaseAgentService,
     private val addressDefinitionService: AddressDefinitionService,
     private val assetMetadataService: AssetMetadataService
-) : FundRepository {
+) : FundListRepository {
 
     override suspend fun getFunds(fundType: FundType): Flow<Fund> = flow {
         val funds = baseAgentService.getSubAgents(fundType.address)

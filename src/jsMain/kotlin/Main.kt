@@ -4,7 +4,7 @@ import navigation.NavHost
 import navigation.Navigator
 import navigation.Screen
 import funddetails.FundDetails
-import funddetails.FundDetailsModel
+import funddetails.FundDetailsViewModel
 import fundlist.FundList
 import fundlist.FundListViewModel
 import fundlist.FundType
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import obyte.MockAddressDefinitionService
 import obyte.MockAssetMetadataService
 import obyte.MockBaseAgentService
-import obyte.ObyteFundRepository
+import obyte.ObyteFundListRepository
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.renderComposable
 import wallet.WalletWidget
@@ -34,12 +34,12 @@ class Application(override val coroutineContext: CoroutineContext = Job()) : Cor
         val addressDefinitionService = MockAddressDefinitionService()
         val baseAgentService = MockBaseAgentService()
 
-        val fundReleaseRepository = HardCodedTypeRepository
-        val fundRepository =
-            ObyteFundRepository(baseAgentService, addressDefinitionService, assetMetadataService)
+        val fundTypeRepository = HardCodedTypeRepository
+        val fundListRepository =
+            ObyteFundListRepository(baseAgentService, addressDefinitionService, assetMetadataService)
 
-        val getFundTypesUseCase = GetFundTypesUseCase(fundReleaseRepository)
-        val getFundsUseCase = GetFundsUseCase(fundRepository)
+        val getFundTypesUseCase = GetFundTypesUseCase(fundTypeRepository)
+        val getFundsUseCase = GetFundsUseCase(fundListRepository)
 
         renderComposable(rootElementId = "root") {
             val walletAddress = remember { mutableStateOf("") }
@@ -49,7 +49,7 @@ class Application(override val coroutineContext: CoroutineContext = Job()) : Cor
             }
             Main {
                 val navigator = remember { Navigator(root = Screen.Home) }
-                val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase, navigator, this@launch)
+                val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase, this@launch)
 
                 NavHost(navigator) {
                     composable(Screen.Home) {
@@ -57,14 +57,13 @@ class Application(override val coroutineContext: CoroutineContext = Job()) : Cor
                     }
 
                     composable(Screen.Details) {
-                        FundDetails(FundDetailsModel(navigator))
+                        FundDetails(FundDetailsViewModel(navigator))
                     }
                 }
             }
         }
     }
 }
-
 
 object HardCodedTypeRepository : FundTypeRepository {
     override suspend fun getFundTypes(): List<FundType> = listOf(

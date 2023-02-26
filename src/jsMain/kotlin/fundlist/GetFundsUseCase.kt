@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 
 class GetFundsUseCase(
-    private val fundRepository: FundRepository
+    private val fundListRepository: FundListRepository
 ) {
 
     operator fun invoke(fundType: FundType): Flow<Resource<List<Fund>>> = flow {
         emit(Resource.Loading())
 
-        fundRepository
+        fundListRepository
             .getFunds(fundType)
             .onEach {
                 emit(Resource.Success(listOf(it)))

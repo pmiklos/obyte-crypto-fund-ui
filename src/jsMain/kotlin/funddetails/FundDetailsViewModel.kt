@@ -7,7 +7,7 @@ import funddetails.components.AssetAllocationTableBean
 import funddetails.components.AssetBean
 import navigation.Navigator
 
-class FundDetailsModel(navigator: Navigator) {
+class FundDetailsViewModel(navigator: Navigator) {
 
     private val _state = mutableStateOf(FundDetailsState())
 

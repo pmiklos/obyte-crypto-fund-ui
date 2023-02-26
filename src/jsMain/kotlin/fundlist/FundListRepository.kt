@@ -2,7 +2,7 @@ package fundlist
 
 import kotlinx.coroutines.flow.Flow
 
-interface FundRepository {
+interface FundListRepository {
 
     suspend fun getFunds(fundType: FundType): Flow<Fund>
 }

@@ -17,8 +17,8 @@ import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
-fun FundDetails(fundDetailsModel: FundDetailsModel) {
-    val state = fundDetailsModel.state.value
+fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
+    val state = fundDetailsViewModel.state.value
 
     state.fundDetails?.let { fundDetails ->
         Row {
