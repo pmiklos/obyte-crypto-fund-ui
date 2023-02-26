@@ -4,6 +4,7 @@ import navigation.NavHost
 import navigation.Navigator
 import navigation.Screen
 import funddetails.FundDetails
+import funddetails.FundDetailsModel
 import fundlist.FundList
 import fundlist.FundListViewModel
 import fundlist.FundType
@@ -56,7 +57,7 @@ class Application(override val coroutineContext: CoroutineContext = Job()) : Cor
                     }
 
                     composable(Screen.Details) {
-                        FundDetails(navigator)
+                        FundDetails(FundDetailsModel(navigator))
                     }
                 }
             }
