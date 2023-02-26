@@ -11,7 +11,7 @@ import org.jetbrains.compose.web.dom.Thead
 import org.jetbrains.compose.web.dom.Tr
 
 @Composable
-fun AssetAllocationTable(model: AssetAllocationTableModel) {
+fun AssetAllocationTable(model: AssetAllocationTableBean) {
     Table( attrs = {
         classes("table", "table-bordered")
     }) {
@@ -48,7 +48,7 @@ fun AssetAllocationTable(model: AssetAllocationTableModel) {
     }
 }
 
-class AssetAllocationTableModel(
+class AssetAllocationTableBean(
     val allocations: List<AssetAllocationBean>) {
 }
 
