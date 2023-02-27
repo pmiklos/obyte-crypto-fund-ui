@@ -2,7 +2,7 @@ package obyte
 
 import kotlinx.coroutines.delay
 
-class MockAssetMetadataService : AssetMetadataService {
+object MockAssetMetadataService : AssetMetadataService {
     override suspend fun getAssetMetadata(assetHash: String): AssetMetadata {
         delay(500)
         return when (assetHash) {
@@ -21,14 +21,14 @@ class MockAssetMetadataService : AssetMetadataService {
     }
 }
 
-class MockBaseAgentService : BaseAgentService {
+object MockBaseAgentService : BaseAgentService {
     override suspend fun getSubAgents(baseAgent: String): List<String> {
         delay(1000L)
         return listOf("FUND0000000000000000000000000001", "FUND0000000000000000000000000002")
     }
 }
 
-class MockAddressDefinitionService : AddressDefinitionService {
+object MockAddressDefinitionService : AddressDefinitionService {
     override suspend fun getDefinitionForAddress(address: String): AddressDefinition =
         when (address) {
             "FUND0000000000000000000000000001" -> AddressDefinition(
@@ -67,3 +67,14 @@ class MockAddressDefinitionService : AddressDefinitionService {
         }
 }
 
+object MockBalanceService : BalanceService {
+    override suspend fun getBalances(addresses: List<String>): Map<String, Map<String, Balance>> {
+        return addresses.associateWith {
+            mapOf(
+                "fSwaCprr3OSNHXTLDtOK3lflKEKvQi7ypWQSh1FfK1E=" to Balance(stable = 0, pending = 12345649),
+                "3aw7r8dm0C/TG3w2CQGyCc8ukbMpeHJ/SXgbej/WXz8=" to Balance(stable = 0, pending = 875698)
+            )
+        }
+    }
+
+}

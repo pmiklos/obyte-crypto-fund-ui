@@ -1,64 +1,61 @@
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import navigation.NavHost
-import navigation.Navigator
-import navigation.Screen
 import funddetails.FundDetails
 import funddetails.FundDetailsViewModel
+import funddetails.GetFundDetailsUseCase
 import fundlist.FundList
 import fundlist.FundListViewModel
 import fundlist.FundType
 import fundlist.FundTypeRepository
 import fundlist.GetFundTypesUseCase
 import fundlist.GetFundsUseCase
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import navigation.NavHost
+import navigation.Navigator
+import navigation.Screen
 import obyte.MockAddressDefinitionService
 import obyte.MockAssetMetadataService
+import obyte.MockBalanceService
 import obyte.MockBaseAgentService
+import obyte.ObyteFundDetailsRepository
 import obyte.ObyteFundListRepository
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.renderComposable
 import wallet.WalletWidget
 
 fun main() {
-    Application().start()
-}
+    val assetMetadataService = MockAssetMetadataService
+    val addressDefinitionService = MockAddressDefinitionService
+    val baseAgentService = MockBaseAgentService
+    val balanceService = MockBalanceService
 
-class Application(override val coroutineContext: CoroutineContext = Job()) : CoroutineScope {
+    val fundTypeRepository = HardCodedTypeRepository
+    val fundListRepository =
+        ObyteFundListRepository(baseAgentService, addressDefinitionService, assetMetadataService)
 
-    fun start() = launch {
-        val assetMetadataService = MockAssetMetadataService()
-        val addressDefinitionService = MockAddressDefinitionService()
-        val baseAgentService = MockBaseAgentService()
+    val getFundTypesUseCase = GetFundTypesUseCase(fundTypeRepository)
+    val getFundsUseCase = GetFundsUseCase(fundListRepository)
 
-        val fundTypeRepository = HardCodedTypeRepository
-        val fundListRepository =
-            ObyteFundListRepository(baseAgentService, addressDefinitionService, assetMetadataService)
+    val fundDetailsRepository = ObyteFundDetailsRepository(balanceService)
+    val getFundDetailsUseCase = GetFundDetailsUseCase(fundDetailsRepository)
 
-        val getFundTypesUseCase = GetFundTypesUseCase(fundTypeRepository)
-        val getFundsUseCase = GetFundsUseCase(fundListRepository)
+    renderComposable(rootElementId = "root") {
+        val navigator = Navigator(root = Screen.Home)
+        val walletAddress = mutableStateOf("")
+        val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase)
 
-        renderComposable(rootElementId = "root") {
-            val walletAddress = remember { mutableStateOf("") }
-
-            PageHeader(title = "Crypto Funds") {
-                WalletWidget(walletAddress)
-            }
-            Main {
-                val navigator = remember { Navigator(root = Screen.Home) }
-                val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase, this@launch)
-
-                NavHost(navigator) {
-                    composable(Screen.Home) {
-                        FundList(fundListViewModel)
-                    }
-
-                    composable(Screen.Details) {
-                        FundDetails(FundDetailsViewModel(navigator))
-                    }
+        PageHeader(title = "Crypto Funds") {
+            WalletWidget(walletAddress)
+        }
+        Main {
+            NavHost(navigator) {
+                composable(Screen.Home) {
+                    FundList(fundListViewModel)
+                }
+                composable(Screen.Details) {
+                    FundDetails(FundDetailsViewModel(getFundDetailsUseCase, navigator))
                 }
             }
         }

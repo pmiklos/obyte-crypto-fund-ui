@@ -6,14 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import common.Resource
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class FundListViewModel(
     private val getFundTypes: GetFundTypesUseCase,
-    private val getFunds: GetFundsUseCase,
-    private val coroutineScope: CoroutineScope
+    private val getFunds: GetFundsUseCase
 ) {
     private val _funds = mutableStateListOf<FundSummaryBean>()
     private val _state = mutableStateOf(FundListState())
@@ -21,10 +21,12 @@ class FundListViewModel(
     val state: State<FundListState> = _state
 
     init {
-        fetchAllFunds()
+        CoroutineScope(Job()).launch {
+            fetchAllFunds(this)
+        }.start()
     }
 
-    private fun fetchAllFunds() = coroutineScope.launch {
+    private suspend fun fetchAllFunds(coroutineScope: CoroutineScope) {
         getFundTypes().forEach { baseFund ->
 
             getFunds(baseFund).onEach { result ->
@@ -51,7 +53,7 @@ class FundListViewModel(
                         _state.value = FundListState(isLoading = true)
                     }
                 }
-            }.launchIn(this)
+            }.launchIn(coroutineScope)
         }
     }
 

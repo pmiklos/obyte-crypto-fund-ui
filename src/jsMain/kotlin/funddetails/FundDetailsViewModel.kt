@@ -2,46 +2,87 @@ package funddetails
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import common.Resource
 import funddetails.components.AssetAllocationBean
 import funddetails.components.AssetAllocationTableBean
 import funddetails.components.AssetBean
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import navigation.Navigator
 
-class FundDetailsViewModel(navigator: Navigator) {
+class FundDetailsViewModel(
+    private val getFundDetails: GetFundDetailsUseCase,
+    navigator: Navigator,
+) {
 
     private val _state = mutableStateOf(FundDetailsState())
 
     val state: State<FundDetailsState> = _state
 
     init {
-        getFundDetails(navigator.param)
+        CoroutineScope(Job()).launch {
+            initializeFundDetails(navigator.param, this)
+        }.start()
     }
 
-    private fun getFundDetails(address: String?) {
+    private fun initializeFundDetails(address: String?, coroutineScope: CoroutineScope) {
         if (address == null) {
             _state.value = FundDetailsState(error = "No crypto fund address")
             return
         }
 
-        _state.value = FundDetailsState(isLoading = true)
+        getFundDetails(address)
+            .onEach { result ->
+                console.log(result)
+                when (result) {
+                    is Resource.Loading -> {
+                        _state.value = FundDetailsState(isLoading = true)
+                    }
 
+                    is Resource.Error -> {
+                        _state.value = FundDetailsState(error = result.message ?: "Unexpected error")
+                    }
 
-        val assetAllocations = AssetAllocationTableBean(
-            listOf(
-                AssetAllocationBean(
-                    AssetBean("BTC", "vApNsebTEPb3QDNNfyLsDB/iI5st9koMpAqvADzTw5A="),
-                    "14.68",
-                    "2.20279710"
-                ),
-                AssetAllocationBean(
-                    AssetBean("ETC", "RF/ysZ/ZY4leyc3huUq1yFc0xTS0GdeFQu8RmXas4ys="),
-                    "85.32",
-                    "12.797202"
-                ),
-            )
-        )
+                    is Resource.Success -> {
+                        result.data?.let { fundDetails ->
+                            _state.value =
+                                FundDetailsState(
+                                    fundDetails = FundDetailsBean(
+                                        address = fundDetails.address,
+                                        totalShares = fundDetails.totalShares.toFormattedNumber(),
+                                        allocationTable = AssetAllocationTableBean(
+                                            allocations = fundDetails.allocation.map {
+                                                AssetAllocationBean(
+                                                    asset = AssetBean(
+                                                        symbol = it.balance.asset.name,
+                                                        hash = it.balance.asset.hash
+                                                    ),
+                                                    balance = it.balance.toFormattedNumber(),
+                                                    percentage = it.targetPercentage.toFormattedPecentage()
+                                                )
+                                            }
+                                        )
+                                    )
+                                )
+                        }
+                    }
+                }
+            }
+            .launchIn(coroutineScope)
+    }
 
-        _state.value = FundDetailsState(fundDetails = FundDetailsBean(address, "5432545", assetAllocations))
+    private fun Balance.toFormattedNumber(): String {
+        // TODO find a way to use Javascript Math.pow
+        val divisor = 1L.rangeTo(asset.decimals).fold(1L) { pow, _ -> pow * 10 }
+        return amount.toDouble().div(divisor).asDynamic().toFixed(asset.decimals).toString()
+    }
+
+    private fun Double.toFormattedPecentage(): String {
+        return asDynamic().toFixed(2).toString() + "%"
     }
 
 }
@@ -49,5 +90,5 @@ class FundDetailsViewModel(navigator: Navigator) {
 data class FundDetailsBean(
     val address: String,
     val totalShares: String,
-    val assetAllocations: AssetAllocationTableBean
+    val allocationTable: AssetAllocationTableBean
 )

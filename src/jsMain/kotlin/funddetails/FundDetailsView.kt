@@ -27,7 +27,7 @@ fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
             }
             Col(6) {
                 AssetAllocationTable(
-                    fundDetails.assetAllocations
+                    fundDetails.allocationTable
                 )
             }
         }
