@@ -82,7 +82,7 @@ class FundDetailsViewModel(
     }
 
     private fun Double.toFormattedPecentage(): String {
-        return asDynamic().toFixed(2).toString() + "%"
+        return times(100).asDynamic().toFixed(2).toString() + "%"
     }
 
 }
