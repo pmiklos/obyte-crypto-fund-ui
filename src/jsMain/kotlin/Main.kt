@@ -1,5 +1,4 @@
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import funddetails.FundDetails
 import funddetails.FundDetailsViewModel
 import funddetails.GetFundDetailsUseCase
@@ -9,14 +8,12 @@ import fundlist.FundType
 import fundlist.FundTypeRepository
 import fundlist.GetFundTypesUseCase
 import fundlist.GetFundsUseCase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import navigation.NavHost
 import navigation.Navigator
 import navigation.Screen
 import obyte.MockAddressDefinitionService
 import obyte.MockAssetMetadataService
+import obyte.MockAutonomousAgentService
 import obyte.MockBalanceService
 import obyte.MockBaseAgentService
 import obyte.ObyteFundDetailsRepository
@@ -26,6 +23,7 @@ import org.jetbrains.compose.web.renderComposable
 import wallet.WalletWidget
 
 fun main() {
+    val autonomousAgentService = MockAutonomousAgentService
     val assetMetadataService = MockAssetMetadataService
     val addressDefinitionService = MockAddressDefinitionService
     val baseAgentService = MockBaseAgentService
@@ -38,7 +36,13 @@ fun main() {
     val getFundTypesUseCase = GetFundTypesUseCase(fundTypeRepository)
     val getFundsUseCase = GetFundsUseCase(fundListRepository)
 
-    val fundDetailsRepository = ObyteFundDetailsRepository(balanceService)
+    val fundDetailsRepository =
+        ObyteFundDetailsRepository(
+            autonomousAgentService,
+            addressDefinitionService,
+            assetMetadataService,
+            balanceService
+        )
     val getFundDetailsUseCase = GetFundDetailsUseCase(fundDetailsRepository)
 
     renderComposable(rootElementId = "root") {

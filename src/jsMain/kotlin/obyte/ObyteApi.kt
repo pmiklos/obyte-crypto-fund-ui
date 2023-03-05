@@ -17,5 +17,25 @@ interface BaseAgentService {
 }
 
 interface BalanceService {
+    /**
+     * <pre>
+     *     {
+     *          TMWNLXR42CKIP4A774BQGNVBZAPHY7GH: {
+     *              base: {
+     *                  stable: 838,
+     *                  pending: 0
+     *                  },
+     *              's+bzDkwx0TVMtdyf9YU4wEA23oInOUzulO+r5WxBUZs=': {
+     *                  stable: 98,
+     *                  pending: 0
+     *              }
+     *          }
+     *     }
+     * </pre>
+     */
     suspend fun getBalances(addresses: List<String>): Map<String, Map<String, Balance>>
+}
+
+interface AutonomousAgentService {
+    suspend fun getState(address: String): Map<String, String>
 }

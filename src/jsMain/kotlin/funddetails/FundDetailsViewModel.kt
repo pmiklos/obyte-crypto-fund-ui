@@ -3,6 +3,7 @@ package funddetails
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import common.Resource
+import common.powerOf
 import funddetails.components.AssetAllocationBean
 import funddetails.components.AssetAllocationTableBean
 import funddetails.components.AssetBean
@@ -10,7 +11,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import navigation.Navigator
 
@@ -54,15 +54,19 @@ class FundDetailsViewModel(
                                     fundDetails = FundDetailsBean(
                                         address = fundDetails.address,
                                         totalShares = fundDetails.totalShares.toFormattedNumber(),
+                                        shareAsset = fundDetails.totalShares.asset.hash,
+                                        shareSymbol = fundDetails.totalShares.asset.name,
                                         allocationTable = AssetAllocationTableBean(
-                                            allocations = fundDetails.allocation.map {
+                                            allocations = fundDetails.allocation.map { allocation ->
                                                 AssetAllocationBean(
                                                     asset = AssetBean(
-                                                        symbol = it.balance.asset.name,
-                                                        hash = it.balance.asset.hash
+                                                        symbol = allocation.balance.asset.name,
+                                                        hash = allocation.balance.asset.hash
                                                     ),
-                                                    balance = it.balance.toFormattedNumber(),
-                                                    percentage = it.targetPercentage.toFormattedPecentage()
+                                                    balance = allocation.balance.toFormattedNumber(),
+                                                    percentage = fundDetails.run {
+                                                        allocation.adjustedPercentage.toFormattedPecentage()
+                                                    }
                                                 )
                                             }
                                         )
@@ -76,8 +80,7 @@ class FundDetailsViewModel(
     }
 
     private fun Balance.toFormattedNumber(): String {
-        // TODO find a way to use Javascript Math.pow
-        val divisor = 1L.rangeTo(asset.decimals).fold(1L) { pow, _ -> pow * 10 }
+        val divisor = 10.powerOf(asset.decimals)
         return amount.toDouble().div(divisor).asDynamic().toFixed(asset.decimals).toString()
     }
 
@@ -90,5 +93,7 @@ class FundDetailsViewModel(
 data class FundDetailsBean(
     val address: String,
     val totalShares: String,
+    val shareAsset: String,
+    val shareSymbol: String,
     val allocationTable: AssetAllocationTableBean
 )

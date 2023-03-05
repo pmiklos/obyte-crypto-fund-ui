@@ -15,7 +15,7 @@ class GetFundDetailsUseCase(
             val fundDetails = fundDetailsRepository.getFundDetails(address)
             emit(Resource.Success(fundDetails))
         } catch (e: Throwable) {
-            console.log(e.message)
+            console.error(e)
             emit(Resource.Error(e.message))
         }
     }

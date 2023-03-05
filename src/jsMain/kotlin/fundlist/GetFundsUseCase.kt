@@ -20,6 +20,7 @@ class GetFundsUseCase(
                 emit(Resource.Success(listOf(it)))
             }
             .catch {
+                console.error(it)
                 emit(Resource.Error(it.message))
             }
             .collect()

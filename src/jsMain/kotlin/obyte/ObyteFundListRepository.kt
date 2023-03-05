@@ -17,15 +17,14 @@ class ObyteFundListRepository(
         val funds = baseAgentService.getSubAgents(fundType.address)
 
         funds.forEach { fundAddress ->
-            val definition = addressDefinitionService.getDefinitionForAddress(fundAddress)
-            val portfolio = definition.params["portfolio"] as Iterable<Map<String, Any>>
-
+            val addressDefinition = addressDefinitionService.getDefinitionForAddress(fundAddress)
+            val fundDefinition = addressDefinition.asFundDefinition()
             emit(Fund(
                 address = fundAddress,
-                portfolio = portfolio.map { item ->
+                portfolio = fundDefinition.portfolio.map { item ->
                     Portfolio(
-                        assetName = assetMetadataService.getAssetMetadata(item["asset"] as String).ticker,
-                        percentage = item["percentage"] as Double
+                        assetName = assetMetadataService.getAssetMetadata(item.asset).ticker,
+                        percentage = item.percentage
                     )
                 }
             ))

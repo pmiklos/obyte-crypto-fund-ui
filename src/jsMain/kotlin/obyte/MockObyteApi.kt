@@ -16,6 +16,10 @@ object MockAssetMetadataService : AssetMetadataService {
                 decimals = 6
             )
 
+            "hjFW/MkgNm7yUmSZghtI/+GZL176MQGQYEQKixOH2TM=" -> AssetMetadata(
+                ticker = "FUND-BTC-ETH",
+                decimals = 4
+            )
             else -> throw RuntimeException("No such asset")
         }
     }
@@ -34,6 +38,7 @@ object MockAddressDefinitionService : AddressDefinitionService {
             "FUND0000000000000000000000000001" -> AddressDefinition(
                 type = "autonomous agent",
                 params = mapOf(
+                    "base_aa" to "BASE00000000000000000000000000V1",
                     "portfolio" to listOf(
                         mapOf(
                             "asset" to "fSwaCprr3OSNHXTLDtOK3lflKEKvQi7ypWQSh1FfK1E=",
@@ -50,6 +55,7 @@ object MockAddressDefinitionService : AddressDefinitionService {
             "FUND0000000000000000000000000002" -> AddressDefinition(
                 type = "autonomous agent",
                 params = mapOf(
+                    "base_aa" to "BASE00000000000000000000000000V1",
                     "portfolio" to listOf(
                         mapOf(
                             "asset" to "fSwaCprr3OSNHXTLDtOK3lflKEKvQi7ypWQSh1FfK1E=",
@@ -71,10 +77,19 @@ object MockBalanceService : BalanceService {
     override suspend fun getBalances(addresses: List<String>): Map<String, Map<String, Balance>> {
         return addresses.associateWith {
             mapOf(
-                "fSwaCprr3OSNHXTLDtOK3lflKEKvQi7ypWQSh1FfK1E=" to Balance(stable = 0, pending = 12345649),
-                "3aw7r8dm0C/TG3w2CQGyCc8ukbMpeHJ/SXgbej/WXz8=" to Balance(stable = 0, pending = 875698)
+                "fSwaCprr3OSNHXTLDtOK3lflKEKvQi7ypWQSh1FfK1E=" to Balance(stable = 12345649, pending = 0),
+                "3aw7r8dm0C/TG3w2CQGyCc8ukbMpeHJ/SXgbej/WXz8=" to Balance(stable = 875698, pending = 0),
             )
         }
     }
 
+}
+
+object MockAutonomousAgentService: AutonomousAgentService {
+    override suspend fun getState(address: String): Map<String, String> {
+        return mapOf(
+            "asset" to "hjFW/MkgNm7yUmSZghtI/+GZL176MQGQYEQKixOH2TM=",
+            "shares" to "873405271"
+        )
+    }
 }
