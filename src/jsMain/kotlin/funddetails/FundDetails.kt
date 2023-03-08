@@ -1,6 +1,6 @@
 package funddetails
 
-import common.powerOf
+import common.movePointLeft
 
 data class FundDetails(
     val address: String,
@@ -43,5 +43,5 @@ data class AssetAllocation(
     /**
      * The amount of allocated coins in major currency unit.
      */
-    val normalizedAllocation = targetPercentage / 10.powerOf(balance.asset.decimals)
+    val normalizedAllocation = targetPercentage.movePointLeft(balance.asset.decimals)
 }

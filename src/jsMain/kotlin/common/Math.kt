@@ -1,6 +1,10 @@
 package common
 
-// TODO use external Javascript function
-fun Int.powerOf(exponent: Int): Long =
-    if (exponent == 0) 1
-    else 1.rangeTo(exponent).fold(1L) { acc, _ -> this * acc }
+fun Double.movePointRight(places: Int): Double =
+    if (places < 1) this
+    else 0.rangeTo(places).fold(this) { result, _ -> result * 10.0 }
+
+
+fun Double.movePointLeft(places: Int): Double =
+    if (places < 1) this
+    else 0.rangeTo(places).fold(this) { result, _ -> result / 10.0 }

@@ -1,24 +1,31 @@
 package funddetails
 
 import androidx.compose.runtime.Composable
+import bootstrap.AddOn
+import bootstrap.ButtonBlock
+import bootstrap.ButtonPrimary
 import bootstrap.Card
 import bootstrap.CardBody
-import bootstrap.CardFooter
 import bootstrap.CardHeader
 import bootstrap.Col
+import bootstrap.InputGroup
 import bootstrap.Row
+import bootstrap.TextInput
 import bootstrap.Warning
 import compose.Dd
 import compose.Dl
 import compose.Dt
 import funddetails.components.AssetAllocationTable
-import navigation.Screen
+import funddetails.components.AssetPaymentTable
+import org.jetbrains.compose.web.attributes.disabled
+import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.dom.A
+import org.jetbrains.compose.web.dom.Form
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
-    val state = fundDetailsViewModel.state.value
+    val state = fundDetailsViewModel.fundDetailState.value
 
     state.fundDetails?.let { fundDetails ->
         Row {
@@ -26,9 +33,9 @@ fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
                 FundInfo(fundDetails)
             }
             Col(6) {
-                AssetAllocationTable(
-                    fundDetails.allocationTable
-                )
+                Trade(fundDetailsViewModel.tradingState.value) {
+                    fundDetailsViewModel.updatePayment(it)
+                }
             }
         }
     }
@@ -68,10 +75,44 @@ private fun FundInfo(fundDetails: FundDetailsBean) {
                     }
                 }
             }
+            AssetAllocationTable(
+                fundDetails.allocationTable
+            )
         }
-        CardFooter {
-            A(href = Screen.Home.href) {
-                Text("back")
+    }
+}
+
+@Composable
+private fun Trade(
+    buyShares: TradingBean,
+    onPurchaseAmountChange: (String) -> Unit
+) {
+    Card {
+        CardHeader {
+            Text("Trade")
+        }
+        CardBody {
+            Form {
+                InputGroup {
+                    TextInput {
+                        placeholder("Enter the number of shares")
+                        value(buyShares.sharesToBuy)
+                        onInput { onPurchaseAmountChange(it.value) }
+                    }
+                    AddOn(buyShares.shareSymbol)
+                }
+
+                AssetPaymentTable(buyShares.assetPaymentTable)
+
+                ButtonBlock {
+                    ButtonPrimary(attrs = {
+                        if (buyShares.sharesToBuy == null) {
+                            disabled()
+                        }
+                    }) {
+                        Text("Buy Shares")
+                    }
+                }
             }
         }
     }

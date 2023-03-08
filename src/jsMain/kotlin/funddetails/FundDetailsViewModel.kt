@@ -3,10 +3,13 @@ package funddetails
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import common.Resource
-import common.powerOf
+import common.movePointLeft
+import common.movePointRight
 import funddetails.components.AssetAllocationBean
 import funddetails.components.AssetAllocationTableBean
 import funddetails.components.AssetBean
+import funddetails.components.AssetPaymentBean
+import funddetails.components.AssetPaymentTableBean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -19,9 +22,11 @@ class FundDetailsViewModel(
     navigator: Navigator,
 ) {
 
-    private val _state = mutableStateOf(FundDetailsState())
+    private val _fundDetailsState = mutableStateOf(FundDetailsState())
+    private val _tradingState = mutableStateOf(TradingBean())
 
-    val state: State<FundDetailsState> = _state
+    val fundDetailState: State<FundDetailsState> = _fundDetailsState
+    val tradingState: State<TradingBean> = _tradingState
 
     init {
         CoroutineScope(Job()).launch {
@@ -31,7 +36,7 @@ class FundDetailsViewModel(
 
     private fun initializeFundDetails(address: String?, coroutineScope: CoroutineScope) {
         if (address == null) {
-            _state.value = FundDetailsState(error = "No crypto fund address")
+            _fundDetailsState.value = FundDetailsState(error = "No crypto fund address")
             return
         }
 
@@ -40,16 +45,16 @@ class FundDetailsViewModel(
                 console.log(result)
                 when (result) {
                     is Resource.Loading -> {
-                        _state.value = FundDetailsState(isLoading = true)
+                        _fundDetailsState.value = FundDetailsState(isLoading = true)
                     }
 
                     is Resource.Error -> {
-                        _state.value = FundDetailsState(error = result.message ?: "Unexpected error")
+                        _fundDetailsState.value = FundDetailsState(error = result.message ?: "Unexpected error")
                     }
 
                     is Resource.Success -> {
                         result.data?.let { fundDetails ->
-                            _state.value =
+                            _fundDetailsState.value =
                                 FundDetailsState(
                                     fundDetails = FundDetailsBean(
                                         address = fundDetails.address,
@@ -72,6 +77,20 @@ class FundDetailsViewModel(
                                         )
                                     )
                                 )
+                            _tradingState.value = TradingBean(
+                                sharesToBuy = "",
+                                shareSymbol = fundDetails.totalShares.asset.name,
+                                allocation = fundDetails.allocation,
+                                totalShares = fundDetails.totalShares,
+                                assetPaymentTable = AssetPaymentTableBean(
+                                    assetPayments = fundDetails.allocation.map { allocation ->
+                                        AssetPaymentBean(
+                                            assetSymbol = allocation.balance.asset.name,
+                                            amount = "0"
+                                        )
+                                    }
+                                )
+                            )
                         }
                     }
                 }
@@ -80,12 +99,31 @@ class FundDetailsViewModel(
     }
 
     private fun Balance.toFormattedNumber(): String {
-        val divisor = 10.powerOf(asset.decimals)
-        return amount.toDouble().div(divisor).asDynamic().toFixed(asset.decimals).toString()
+        return amount.toDouble().movePointLeft(asset.decimals).asDynamic().toFixed(asset.decimals).toString()
     }
 
     private fun Double.toFormattedPecentage(): String {
         return times(100).asDynamic().toFixed(2).toString() + "%"
+    }
+
+    fun updatePayment(sharesToBuy: String) {
+        val currentState = _tradingState.value
+        val sharesToBuyAmount =
+            sharesToBuy.toDoubleOrNull()?.movePointRight(currentState.totalShares.asset.decimals) ?: 0.0
+        val percentage = sharesToBuyAmount / currentState.totalShares.amount
+
+        _tradingState.value = currentState.copy(
+            sharesToBuy = sharesToBuy,
+            assetPaymentTable = AssetPaymentTableBean(
+                assetPayments = currentState.allocation.map { allocation ->
+                    AssetPaymentBean(
+                        assetSymbol = allocation.balance.asset.name,
+                        amount = allocation.balance.copy(amount = (allocation.balance.amount * percentage).toLong())
+                            .toFormattedNumber()
+                    )
+                }
+            )
+        )
     }
 
 }
@@ -95,5 +133,13 @@ data class FundDetailsBean(
     val totalShares: String,
     val shareAsset: String,
     val shareSymbol: String,
-    val allocationTable: AssetAllocationTableBean
+    val allocationTable: AssetAllocationTableBean,
+)
+
+data class TradingBean(
+    val sharesToBuy: String = "",
+    val shareSymbol: String = "",
+    val allocation: List<AssetAllocation> = emptyList(),
+    val totalShares: Balance = Balance(Asset("", "", 0), 0),
+    val assetPaymentTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList())
 )
