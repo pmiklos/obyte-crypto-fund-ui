@@ -138,4 +138,8 @@ data class TradingBean(
     val allocation: List<AssetAllocation> = emptyList(),
     val totalShares: Balance = Balance(Asset("", "", 0), 0),
     val assetPaymentTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList())
-)
+) {
+    val sharesBuyable = sharesToBuy.toDoubleOrNull()?.run {
+        this > 0.0
+    }?: false
+}

@@ -107,7 +107,7 @@ private fun Trade(
 
                 ButtonBlock {
                     ButtonPrimary(attrs = {
-                        if (tradingState.sharesToBuy == null) {
+                        if (!tradingState.sharesBuyable) {
                             disabled()
                         }
                     }) {
