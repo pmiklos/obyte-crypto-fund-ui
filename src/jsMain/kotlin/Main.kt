@@ -1,4 +1,5 @@
 import androidx.compose.runtime.mutableStateOf
+import funddetails.CalculateAssetPaymentUseCase
 import funddetails.FundDetails
 import funddetails.FundDetailsViewModel
 import funddetails.GetFundDetailsUseCase
@@ -43,7 +44,6 @@ fun main() {
             assetMetadataService,
             balanceService
         )
-    val getFundDetailsUseCase = GetFundDetailsUseCase(fundDetailsRepository)
 
     renderComposable(rootElementId = "root") {
         val navigator = Navigator(root = Screen.Home)
@@ -59,7 +59,13 @@ fun main() {
                     FundList(fundListViewModel)
                 }
                 composable(Screen.Details) {
-                    FundDetails(FundDetailsViewModel(getFundDetailsUseCase, navigator))
+                    FundDetails(
+                        FundDetailsViewModel(
+                            GetFundDetailsUseCase(fundDetailsRepository),
+                            CalculateAssetPaymentUseCase,
+                            navigator
+                        )
+                    )
                 }
             }
         }

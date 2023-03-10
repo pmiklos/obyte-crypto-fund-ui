@@ -3,8 +3,6 @@ package funddetails
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import common.Resource
-import common.movePointLeft
-import common.movePointRight
 import funddetails.components.AssetAllocationBean
 import funddetails.components.AssetAllocationTableBean
 import funddetails.components.AssetBean
@@ -19,6 +17,7 @@ import navigation.Navigator
 
 class FundDetailsViewModel(
     private val getFundDetails: GetFundDetailsUseCase,
+    private val calculateAssetPayment: CalculateAssetPaymentUseCase,
     navigator: Navigator,
 ) {
 
@@ -99,27 +98,24 @@ class FundDetailsViewModel(
     }
 
     private fun Balance.toFormattedNumber(): String {
-        return amount.toDouble().movePointLeft(asset.decimals).asDynamic().toFixed(asset.decimals).toString()
+        return toDouble().asDynamic().toFixed(asset.decimals).toString()
     }
 
     private fun Double.toFormattedPecentage(): String {
         return times(100).asDynamic().toFixed(2).toString() + "%"
     }
 
-    fun updatePayment(sharesToBuy: String) {
-        val currentState = _tradingState.value
-        val sharesToBuyAmount =
-            sharesToBuy.toDoubleOrNull()?.movePointRight(currentState.totalShares.asset.decimals) ?: 0.0
-        val percentage = sharesToBuyAmount / currentState.totalShares.amount
+    fun updateAssetPayments(sharesToBuy: String) = with(tradingState.value) {
+        val sharesToBuyAmount = sharesToBuy.toDoubleOrNull() ?: 0.0
+        val assetPayments = calculateAssetPayment(allocation, totalShares, sharesToBuyAmount)
 
-        _tradingState.value = currentState.copy(
+        _tradingState.value = copy(
             sharesToBuy = sharesToBuy,
             assetPaymentTable = AssetPaymentTableBean(
-                assetPayments = currentState.allocation.map { allocation ->
+                assetPayments = assetPayments.map { payment ->
                     AssetPaymentBean(
-                        assetSymbol = allocation.balance.asset.name,
-                        amount = allocation.balance.copy(amount = (allocation.balance.amount * percentage).toLong())
-                            .toFormattedNumber()
+                        assetSymbol = payment.asset.name,
+                        amount = payment.toFormattedNumber()
                     )
                 }
             )

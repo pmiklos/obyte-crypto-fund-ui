@@ -33,9 +33,10 @@ fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
                 FundInfo(fundDetails)
             }
             Col(6) {
-                Trade(fundDetailsViewModel.tradingState.value) {
-                    fundDetailsViewModel.updatePayment(it)
-                }
+                Trade(
+                    tradingState = fundDetailsViewModel.tradingState.value,
+                    onPurchaseAmountChange = { fundDetailsViewModel.updateAssetPayments(it) }
+                )
             }
         }
     }
@@ -84,7 +85,7 @@ private fun FundInfo(fundDetails: FundDetailsBean) {
 
 @Composable
 private fun Trade(
-    buyShares: TradingBean,
+    tradingState: TradingBean,
     onPurchaseAmountChange: (String) -> Unit
 ) {
     Card {
@@ -96,17 +97,17 @@ private fun Trade(
                 InputGroup {
                     TextInput {
                         placeholder("Enter the number of shares")
-                        value(buyShares.sharesToBuy)
+                        value(tradingState.sharesToBuy)
                         onInput { onPurchaseAmountChange(it.value) }
                     }
-                    AddOn(buyShares.shareSymbol)
+                    AddOn(tradingState.shareSymbol)
                 }
 
-                AssetPaymentTable(buyShares.assetPaymentTable)
+                AssetPaymentTable(tradingState.assetPaymentTable)
 
                 ButtonBlock {
                     ButtonPrimary(attrs = {
-                        if (buyShares.sharesToBuy == null) {
+                        if (tradingState.sharesToBuy == null) {
                             disabled()
                         }
                     }) {
