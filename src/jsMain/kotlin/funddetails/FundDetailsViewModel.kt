@@ -88,6 +88,14 @@ class FundDetailsViewModel(
                                             amount = "0"
                                         )
                                     }
+                                ),
+                                assetRedemptionTable = AssetPaymentTableBean(
+                                    assetPayments = fundDetails.allocation.map { allocation ->
+                                        AssetPaymentBean(
+                                            assetSymbol = allocation.balance.asset.name,
+                                            amount = "0"
+                                        )
+                                    }
                                 )
                             )
                         }
@@ -122,6 +130,23 @@ class FundDetailsViewModel(
         )
     }
 
+    fun updateRedemption(sharesToRedeem: String) = with(tradingState.value) {
+        val sharesToRedeemAmount = sharesToRedeem.toDoubleOrNull()?: 0.0
+        val assetRedemption = calculateAssetPayment(allocation, totalShares, sharesToRedeemAmount)
+
+        _tradingState.value = copy(
+            sharesToRedeem = sharesToRedeem,
+            assetRedemptionTable = AssetPaymentTableBean(
+                assetPayments = assetRedemption.map { redemption ->
+                    AssetPaymentBean(
+                        assetSymbol = redemption.asset.name,
+                        amount = redemption.toFormattedNumber()
+                    )
+                }
+            )
+        )
+    }
+
 }
 
 data class FundDetailsBean(
@@ -134,12 +159,18 @@ data class FundDetailsBean(
 
 data class TradingBean(
     val sharesToBuy: String = "",
+    val sharesToRedeem: String = "",
     val shareSymbol: String = "",
     val allocation: List<AssetAllocation> = emptyList(),
     val totalShares: Balance = Balance(Asset("", "", 0), 0),
-    val assetPaymentTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList())
+    val assetPaymentTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList()),
+    val assetRedemptionTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList())
 ) {
     val sharesBuyable = sharesToBuy.toDoubleOrNull()?.run {
         this > 0.0
-    }?: false
+    } ?: false
+
+    val sharesRedeemable = sharesToRedeem.toDoubleOrNull()?.run {
+        this < totalShares.toDouble()
+    } ?: false
 }

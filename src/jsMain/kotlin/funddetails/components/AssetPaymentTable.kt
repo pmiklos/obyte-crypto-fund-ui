@@ -11,7 +11,7 @@ import org.jetbrains.compose.web.dom.Thead
 import org.jetbrains.compose.web.dom.Tr
 
 @Composable
-fun AssetPaymentTable(model: AssetPaymentTableBean) {
+fun AssetPaymentTable(model: AssetPaymentTableBean, label: String) {
     Table( attrs = {
         classes("table")
     }) {
@@ -21,7 +21,7 @@ fun AssetPaymentTable(model: AssetPaymentTableBean) {
                     Text("Asset")
                 }
                 Th {
-                    Text("Amount")
+                    Text(label)
                 }
             }
         }
