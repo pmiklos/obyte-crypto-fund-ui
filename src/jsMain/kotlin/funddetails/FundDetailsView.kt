@@ -123,7 +123,7 @@ private fun BuySharesPane(
     Form {
         InputGroup {
             TextInput {
-                placeholder("Enter the number of shares")
+                placeholder("Shares to buy")
                 value(tradingState.sharesToBuy)
                 onInput { onPurchaseAmountChange(it.value) }
             }
@@ -152,7 +152,7 @@ private fun RedemptionPane(
     Form {
         InputGroup {
             TextInput {
-                placeholder("Enter the number of shares")
+                placeholder("Shares to redeem")
                 value(tradingState.sharesToRedeem)
                 onInput { onRedemptionAmountChange(it.value) }
                 if (!tradingState.sharesRedeemable) {
