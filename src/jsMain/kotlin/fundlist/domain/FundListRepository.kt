@@ -1,4 +1,4 @@
-package fundlist
+package fundlist.domain
 
 import kotlinx.coroutines.flow.Flow
 

@@ -1,10 +1,12 @@
-package fundlist
+package fundlist.view
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import common.Resource
+import fundlist.usecase.GetFundTypesUseCase
+import fundlist.usecase.GetFundsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn

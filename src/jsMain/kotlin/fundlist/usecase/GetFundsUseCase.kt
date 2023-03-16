@@ -1,6 +1,9 @@
-package fundlist
+package fundlist.usecase
 
 import common.Resource
+import fundlist.domain.FundType
+import fundlist.domain.Fund
+import fundlist.domain.FundListRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect

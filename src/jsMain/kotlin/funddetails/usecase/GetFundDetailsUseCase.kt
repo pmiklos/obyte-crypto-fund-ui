@@ -1,6 +1,8 @@
-package funddetails
+package funddetails.usecase
 
 import common.Resource
+import funddetails.domain.FundDetails
+import funddetails.domain.FundDetailsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

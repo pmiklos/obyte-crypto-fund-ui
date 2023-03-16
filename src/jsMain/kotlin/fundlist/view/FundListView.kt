@@ -1,4 +1,4 @@
-package fundlist
+package fundlist.view
 
 import androidx.compose.runtime.Composable
 import bootstrap.Info

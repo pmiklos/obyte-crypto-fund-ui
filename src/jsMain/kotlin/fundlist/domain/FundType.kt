@@ -1,4 +1,4 @@
-package fundlist
+package fundlist.domain
 
 data class FundType(
     val address: String,

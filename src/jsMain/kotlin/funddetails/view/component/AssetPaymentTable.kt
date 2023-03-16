@@ -1,7 +1,6 @@
-package funddetails.components
+package funddetails.view.component
 
 import androidx.compose.runtime.Composable
-import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Table
 import org.jetbrains.compose.web.dom.Tbody
 import org.jetbrains.compose.web.dom.Td

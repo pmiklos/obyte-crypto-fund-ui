@@ -1,4 +1,7 @@
-package fundlist
+package fundlist.usecase
+
+import fundlist.domain.FundType
+import fundlist.domain.FundTypeRepository
 
 class GetFundTypesUseCase(private val fundTypeRepository: FundTypeRepository) {
 

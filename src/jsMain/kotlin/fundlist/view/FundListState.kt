@@ -1,4 +1,4 @@
-package fundlist
+package fundlist.view
 
 data class FundListState(
     val isLoading: Boolean = false,

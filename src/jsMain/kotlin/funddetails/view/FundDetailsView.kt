@@ -1,4 +1,4 @@
-package funddetails
+package funddetails.view
 
 import androidx.compose.runtime.Composable
 import bootstrap.AddOn
@@ -19,8 +19,8 @@ import bootstrap.Warning
 import compose.Dd
 import compose.Dl
 import compose.Dt
-import funddetails.components.AssetAllocationTable
-import funddetails.components.AssetPaymentTable
+import funddetails.view.component.AssetAllocationTable
+import funddetails.view.component.AssetPaymentTable
 import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.dom.A
@@ -34,10 +34,10 @@ fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
     state.fundDetails?.let { fundDetails ->
         Row {
             Col(6) {
-                FundInfo(fundDetails)
+                FundInformationPane(fundDetails)
             }
             Col(6) {
-                Trade(
+                TradingPane(
                     tradingState = fundDetailsViewModel.tradingState.value,
                     onPurchaseAmountChange = { fundDetailsViewModel.updateAssetPayments(it) },
                     onRedemptionAmountChange = { fundDetailsViewModel.updateRedemption(it) },
@@ -56,7 +56,7 @@ fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
 }
 
 @Composable
-private fun FundInfo(fundDetails: FundDetailsBean) {
+private fun FundInformationPane(fundDetails: FundDetailsBean) {
     Card {
         CardHeader {
             Text("Fund Information")
@@ -89,7 +89,7 @@ private fun FundInfo(fundDetails: FundDetailsBean) {
 }
 
 @Composable
-private fun Trade(
+private fun TradingPane(
     tradingState: TradingBean,
     onPurchaseAmountChange: (String) -> Unit,
     onRedemptionAmountChange: (String) -> Unit

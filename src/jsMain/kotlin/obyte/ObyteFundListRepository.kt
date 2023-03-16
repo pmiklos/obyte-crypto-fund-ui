@@ -1,9 +1,9 @@
 package obyte
 
-import fundlist.Fund
-import fundlist.FundListRepository
-import fundlist.FundType
-import fundlist.Portfolio
+import fundlist.domain.Fund
+import fundlist.domain.FundListRepository
+import fundlist.domain.FundType
+import fundlist.domain.Portfolio
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 

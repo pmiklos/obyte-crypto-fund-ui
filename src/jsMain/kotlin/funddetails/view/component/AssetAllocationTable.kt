@@ -1,4 +1,4 @@
-package funddetails.components
+package funddetails.view.component
 
 import androidx.compose.runtime.Composable
 import org.jetbrains.compose.web.dom.A
@@ -48,9 +48,6 @@ fun AssetAllocationTable(model: AssetAllocationTableBean) {
     }
 }
 
-class AssetAllocationTableBean(
-    val allocations: List<AssetAllocationBean>) {
-}
-
+data class AssetAllocationTableBean(val allocations: List<AssetAllocationBean>)
 data class AssetBean(val symbol: String, val hash: String)
 data class AssetAllocationBean(val asset: AssetBean, val percentage: String, val balance: String)

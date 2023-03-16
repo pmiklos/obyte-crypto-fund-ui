@@ -1,13 +1,16 @@
-package funddetails
+package funddetails.view
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import common.Resource
-import funddetails.components.AssetAllocationBean
-import funddetails.components.AssetAllocationTableBean
-import funddetails.components.AssetBean
-import funddetails.components.AssetPaymentBean
-import funddetails.components.AssetPaymentTableBean
+import funddetails.view.component.AssetAllocationBean
+import funddetails.view.component.AssetAllocationTableBean
+import funddetails.view.component.AssetBean
+import funddetails.view.component.AssetPaymentBean
+import funddetails.view.component.AssetPaymentTableBean
+import funddetails.domain.Balance
+import funddetails.usecase.CalculateAssetPaymentUseCase
+import funddetails.usecase.GetFundDetailsUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
@@ -147,30 +150,4 @@ class FundDetailsViewModel(
         )
     }
 
-}
-
-data class FundDetailsBean(
-    val address: String,
-    val totalShares: String,
-    val shareAsset: String,
-    val shareSymbol: String,
-    val allocationTable: AssetAllocationTableBean,
-)
-
-data class TradingBean(
-    val sharesToBuy: String = "",
-    val sharesToRedeem: String = "",
-    val shareSymbol: String = "",
-    val allocation: List<AssetAllocation> = emptyList(),
-    val totalShares: Balance = Balance(Asset("", "", 0), 0),
-    val assetPaymentTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList()),
-    val assetRedemptionTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList())
-) {
-    val sharesBuyable = sharesToBuy.toDoubleOrNull()?.run {
-        this > 0.0
-    } ?: false
-
-    val sharesRedeemable = sharesToRedeem.toDoubleOrNull()?.run {
-        this < totalShares.toDouble()
-    } ?: false
 }

@@ -1,10 +1,10 @@
 package obyte
 
-import funddetails.Asset
-import funddetails.AssetAllocation
-import funddetails.Balance
-import funddetails.FundDetails
-import funddetails.FundDetailsRepository
+import funddetails.domain.Asset
+import funddetails.domain.AssetAllocation
+import funddetails.domain.Balance
+import funddetails.domain.FundDetails
+import funddetails.domain.FundDetailsRepository
 
 class ObyteFundDetailsRepository(
     private val autonomousAgentService: AutonomousAgentService,

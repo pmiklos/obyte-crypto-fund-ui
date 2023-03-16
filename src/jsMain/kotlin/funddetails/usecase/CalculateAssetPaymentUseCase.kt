@@ -1,4 +1,8 @@
-package funddetails
+package funddetails.usecase
+
+import funddetails.domain.AssetAllocation
+import funddetails.domain.Balance
+import funddetails.domain.div
 
 object CalculateAssetPaymentUseCase {
 

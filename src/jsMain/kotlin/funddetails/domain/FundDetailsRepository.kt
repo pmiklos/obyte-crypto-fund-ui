@@ -1,4 +1,4 @@
-package funddetails
+package funddetails.domain
 
 interface FundDetailsRepository {
 
