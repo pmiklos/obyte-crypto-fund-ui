@@ -1,6 +1,14 @@
 package obyte
 
+interface ObyteApi :
+    AddressDefinitionService,
+    AssetMetadataService,
+    AutonomousAgentService,
+    BalanceService,
+    BaseAgentService
+
 data class AssetMetadata(val ticker: String, val decimals: Int)
+data class SubAgent(val address: String, val definition: AddressDefinition)
 data class AddressDefinition(val type: String, val params: Map<String, Any>)
 data class Balance(val stable: Long, val pending: Long)
 
@@ -13,7 +21,7 @@ interface AddressDefinitionService {
 }
 
 interface BaseAgentService {
-    suspend fun getSubAgents(baseAgent: String): List<String>
+    suspend fun getSubAgents(baseAgent: String): List<SubAgent>
 }
 
 interface BalanceService {
@@ -38,4 +46,8 @@ interface BalanceService {
 
 interface AutonomousAgentService {
     suspend fun getState(address: String): Map<String, String>
+}
+
+interface ExplorerService {
+    fun explorerUrl(unitOrAddress: String)
 }

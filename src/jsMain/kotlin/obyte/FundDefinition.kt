@@ -21,14 +21,17 @@ data class FundDefinition(val baseAa: String, val portfolio: List<PortfolioItem>
 data class PortfolioItem(val asset: String, val percentage: Double)
 
 fun AddressDefinition.asFundDefinition(): FundDefinition {
-    val baseAa = params["base_aa"] as String
-    val portfolio = params["portfolio"] as Iterable<Map<String, Any>>
+    val autonomousAgentDefinition = params.asDynamic()
+    val baseAa = autonomousAgentDefinition.base_aa as String
+    val portfolio = autonomousAgentDefinition.params.portfolio.unsafeCast<Array<Map<String, Any>>>()
+
     return FundDefinition(
         baseAa = baseAa,
         portfolio = portfolio.map {
+            val portfolioItem = it.asDynamic()
             PortfolioItem(
-                asset = it["asset"] as String,
-                percentage = it["percentage"] as Double
+                asset = portfolioItem.asset as String,
+                percentage = portfolioItem.percentage as Double
             )
         }
     )

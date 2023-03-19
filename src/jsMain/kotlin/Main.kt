@@ -3,47 +3,42 @@ import funddetails.usecase.CalculateAssetPaymentUseCase
 import funddetails.usecase.GetFundDetailsUseCase
 import funddetails.view.FundDetails
 import funddetails.view.FundDetailsViewModel
-import fundlist.view.FundList
-import fundlist.view.FundListViewModel
 import fundlist.domain.FundType
 import fundlist.domain.FundTypeRepository
 import fundlist.usecase.GetFundTypesUseCase
 import fundlist.usecase.GetFundsUseCase
+import fundlist.view.FundList
+import fundlist.view.FundListViewModel
 import navigation.NavHost
 import navigation.Navigator
 import navigation.Screen
-import obyte.MockAddressDefinitionService
-import obyte.MockAssetMetadataService
-import obyte.MockAutonomousAgentService
-import obyte.MockBalanceService
-import obyte.MockBaseAgentService
+import obyte.MockObyteApi
 import obyte.ObyteFundDetailsRepository
 import obyte.ObyteFundListRepository
+import obyte.ObyteJsApi
+import obyte.Testnet
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.renderComposable
 import wallet.WalletWidget
 
 fun main() {
-    val autonomousAgentService = MockAutonomousAgentService
-    val assetMetadataService = MockAssetMetadataService
-    val addressDefinitionService = MockAddressDefinitionService
-    val baseAgentService = MockBaseAgentService
-    val balanceService = MockBalanceService
+    val obyteApi = ObyteJsApi(Testnet)
 
     val fundTypeRepository = HardCodedTypeRepository
-    val fundListRepository =
-        ObyteFundListRepository(baseAgentService, addressDefinitionService, assetMetadataService)
+    val fundListRepository = ObyteFundListRepository(
+        baseAgentService = obyteApi,
+        assetMetadataService = obyteApi
+    )
 
     val getFundTypesUseCase = GetFundTypesUseCase(fundTypeRepository)
     val getFundsUseCase = GetFundsUseCase(fundListRepository)
 
-    val fundDetailsRepository =
-        ObyteFundDetailsRepository(
-            autonomousAgentService,
-            addressDefinitionService,
-            assetMetadataService,
-            balanceService
-        )
+    val fundDetailsRepository = ObyteFundDetailsRepository(
+        autonomousAgentService = obyteApi,
+        addressDefinitionService = obyteApi,
+        assetMetadataService = obyteApi,
+        balanceService = obyteApi
+    )
 
     renderComposable(rootElementId = "root") {
         val navigator = Navigator(root = Screen.Home)
@@ -75,7 +70,7 @@ fun main() {
 object HardCodedTypeRepository : FundTypeRepository {
     override suspend fun getFundTypes(): List<FundType> = listOf(
         FundType(
-            address = "YSOBOFK4AVXHYV2GC7MVZMOYCNKP52TX",
+            address = "FTKLXQND4LS65OTQK7RXOABB7DENBSEI",
             description = "Two-asset fixed allocation fund",
             version = "0.0.1"
         )

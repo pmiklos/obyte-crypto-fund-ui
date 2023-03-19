@@ -32,6 +32,7 @@ kotlin {
             dependencies {
                 implementation(compose.web.core)
                 implementation(compose.runtime)
+                implementation(npm("obyte", "0.1.23"))
             }
         }
         val jsTest by getting {

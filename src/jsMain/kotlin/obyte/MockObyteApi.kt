@@ -2,71 +2,87 @@ package obyte
 
 import kotlinx.coroutines.delay
 
+object MockObyteApi : ObyteApi,
+    AddressDefinitionService by MockAddressDefinitionService,
+    AssetMetadataService by MockAssetMetadataService,
+    AutonomousAgentService by MockAutonomousAgentService,
+    BalanceService by MockBalanceService,
+    BaseAgentService by MockBaseAgentService
+
 object MockAssetMetadataService : AssetMetadataService {
     override suspend fun getAssetMetadata(assetHash: String): AssetMetadata {
         delay(500)
         return when (assetHash) {
-            "fSwaCprr3OSNHXTLDtOK3lflKEKvQi7ypWQSh1FfK1E=" -> AssetMetadata(
-                ticker = "BTC",
-                decimals = 8
-            )
-
-            "3aw7r8dm0C/TG3w2CQGyCc8ukbMpeHJ/SXgbej/WXz8=" -> AssetMetadata(
-                ticker = "ETH",
+            "q7QPuV2Gd31wcXUeg/IRxfD0Q1kWimei7g+IFKJaIXc=" -> AssetMetadata(
+                ticker = "PYPL",
                 decimals = 6
             )
 
-            "hjFW/MkgNm7yUmSZghtI/+GZL176MQGQYEQKixOH2TM=" -> AssetMetadata(
-                ticker = "FUND-BTC-ETH",
+            "cr0klQISM8PqhjFRXnKK20O9DRq5Yrcx3eEE1xBoCjw=" -> AssetMetadata(
+                ticker = "FISV",
                 decimals = 4
             )
+
+            "GFmWjNQKoJcRPdc5ms22/p14izrM5QUDWKPFoPRccV0=" -> AssetMetadata(
+                ticker = "FUND-FINX",
+                decimals = 4
+            )
+
             else -> throw RuntimeException("No such asset")
         }
     }
 }
 
 object MockBaseAgentService : BaseAgentService {
-    override suspend fun getSubAgents(baseAgent: String): List<String> {
+    override suspend fun getSubAgents(baseAgent: String): List<SubAgent> {
         delay(1000L)
-        return listOf("FUND0000000000000000000000000001", "FUND0000000000000000000000000002")
+        return listOf(
+            SubAgent(
+                "V4KPOLQM2GB2EY4LTBLJHKC2MIVZNB5B",
+                MockAddressDefinitionService.getDefinitionForAddress("V4KPOLQM2GB2EY4LTBLJHKC2MIVZNB5B")
+            ),
+            SubAgent(
+                "FUND0000000000000000000000000002",
+                MockAddressDefinitionService.getDefinitionForAddress("FUND0000000000000000000000000002")
+            )
+        )
     }
 }
 
 object MockAddressDefinitionService : AddressDefinitionService {
     override suspend fun getDefinitionForAddress(address: String): AddressDefinition =
         when (address) {
-            "FUND0000000000000000000000000001" -> AddressDefinition(
+            "V4KPOLQM2GB2EY4LTBLJHKC2MIVZNB5B" -> AddressDefinition(
                 type = "autonomous agent",
-                params = mapOf(
-                    "base_aa" to "BASE00000000000000000000000000V1",
-                    "portfolio" to listOf(
-                        mapOf(
-                            "asset" to "fSwaCprr3OSNHXTLDtOK3lflKEKvQi7ypWQSh1FfK1E=",
-                            "percentage" to 0.95
-                        ),
-                        mapOf(
-                            "asset" to "3aw7r8dm0C/TG3w2CQGyCc8ukbMpeHJ/SXgbej/WXz8=",
-                            "percentage" to 0.05
-                        )
-                    )
-                )
+                params = js("""{
+                        base_aa: "FTKLXQND4LS65OTQK7RXOABB7DENBSEI",
+                        params: {
+                            portfolio: [{
+                                asset: "q7QPuV2Gd31wcXUeg/IRxfD0Q1kWimei7g+IFKJaIXc=",
+                                percentage: 0.95
+                            }, {
+                                asset: "cr0klQISM8PqhjFRXnKK20O9DRq5Yrcx3eEE1xBoCjw=",
+                                percentage: 0.05
+                            }]
+                        }
+                    }"""
+                ).unsafeCast<Map<String, Any>>()
             )
-
             "FUND0000000000000000000000000002" -> AddressDefinition(
                 type = "autonomous agent",
-                params = mapOf(
-                    "base_aa" to "BASE00000000000000000000000000V1",
-                    "portfolio" to listOf(
-                        mapOf(
-                            "asset" to "fSwaCprr3OSNHXTLDtOK3lflKEKvQi7ypWQSh1FfK1E=",
-                            "percentage" to 0.30
-                        ),
-                        mapOf(
-                            "asset" to "3aw7r8dm0C/TG3w2CQGyCc8ukbMpeHJ/SXgbej/WXz8=",
-                            "percentage" to 0.70
-                        )
-                    )
-                )
+                params = js("""{
+                        base_aa: "FTKLXQND4LS65OTQK7RXOABB7DENBSEI",
+                        params: {
+                            portfolio: [{
+                                asset: "q7QPuV2Gd31wcXUeg/IRxfD0Q1kWimei7g+IFKJaIXc=",
+                                percentage: 0.30
+                            }, {
+                                asset: "cr0klQISM8PqhjFRXnKK20O9DRq5Yrcx3eEE1xBoCjw=",
+                                percentage: 0.70
+                            }]
+                        }
+                    }"""
+                ).unsafeCast<Map<String, Any>>()
             )
 
             else -> throw RuntimeException("No such address")
@@ -77,18 +93,18 @@ object MockBalanceService : BalanceService {
     override suspend fun getBalances(addresses: List<String>): Map<String, Map<String, Balance>> {
         return addresses.associateWith {
             mapOf(
-                "fSwaCprr3OSNHXTLDtOK3lflKEKvQi7ypWQSh1FfK1E=" to Balance(stable = 12345649, pending = 0),
-                "3aw7r8dm0C/TG3w2CQGyCc8ukbMpeHJ/SXgbej/WXz8=" to Balance(stable = 875698, pending = 0),
+                "q7QPuV2Gd31wcXUeg/IRxfD0Q1kWimei7g+IFKJaIXc=" to Balance(stable = 12345649, pending = 0),
+                "cr0klQISM8PqhjFRXnKK20O9DRq5Yrcx3eEE1xBoCjw=" to Balance(stable = 875698, pending = 0),
             )
         }
     }
 
 }
 
-object MockAutonomousAgentService: AutonomousAgentService {
+object MockAutonomousAgentService : AutonomousAgentService {
     override suspend fun getState(address: String): Map<String, String> {
         return mapOf(
-            "asset" to "hjFW/MkgNm7yUmSZghtI/+GZL176MQGQYEQKixOH2TM=",
+            "asset" to "GFmWjNQKoJcRPdc5ms22/p14izrM5QUDWKPFoPRccV0=",
             "shares" to "873405271"
         )
     }
