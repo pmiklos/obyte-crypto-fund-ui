@@ -1,6 +1,16 @@
-package obyte
+package ledger.obyte.mock
 
 import kotlinx.coroutines.delay
+import ledger.obyte.AddressDefinition
+import ledger.obyte.AddressDefinitionService
+import ledger.obyte.AssetMetadata
+import ledger.obyte.AssetMetadataService
+import ledger.obyte.AutonomousAgentService
+import ledger.obyte.Balance
+import ledger.obyte.BalanceService
+import ledger.obyte.BaseAgentService
+import ledger.obyte.ObyteApi
+import ledger.obyte.SubAgent
 
 object MockObyteApi : ObyteApi,
     AddressDefinitionService by MockAddressDefinitionService,

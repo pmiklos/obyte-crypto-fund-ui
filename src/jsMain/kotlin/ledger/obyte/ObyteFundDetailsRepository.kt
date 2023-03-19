@@ -1,4 +1,4 @@
-package obyte
+package ledger.obyte
 
 import funddetails.domain.Asset
 import funddetails.domain.AssetAllocation

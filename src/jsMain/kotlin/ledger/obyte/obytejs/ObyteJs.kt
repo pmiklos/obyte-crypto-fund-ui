@@ -1,6 +1,6 @@
 @file:JsModule("obyte")
 @file:JsNonModule
-package obyte
+package ledger.obyte.obytejs
 
 import kotlin.js.Promise
 

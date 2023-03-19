@@ -1,6 +1,18 @@
-package obyte
+package ledger.obyte.obytejs
 
 import kotlinx.coroutines.await
+import ledger.obyte.AddressDefinition
+import ledger.obyte.AddressDefinitionService
+import ledger.obyte.AssetMetadata
+import ledger.obyte.AssetMetadataService
+import ledger.obyte.AutonomousAgentService
+import ledger.obyte.BalanceService
+import ledger.obyte.BaseAgentService
+import ledger.obyte.ObyteApi
+import ledger.obyte.SubAgent
+import ledger.obyte.mock.MockAddressDefinitionService
+import ledger.obyte.mock.MockAutonomousAgentService
+import ledger.obyte.mock.MockBalanceService
 
 class ObyteJsApi(
     obyte: Client,

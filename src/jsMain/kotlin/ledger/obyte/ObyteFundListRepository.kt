@@ -1,4 +1,4 @@
-package obyte
+package ledger.obyte
 
 import fundlist.domain.Fund
 import fundlist.domain.FundListRepository

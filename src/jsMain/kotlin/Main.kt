@@ -3,42 +3,30 @@ import funddetails.usecase.CalculateAssetPaymentUseCase
 import funddetails.usecase.GetFundDetailsUseCase
 import funddetails.view.FundDetails
 import funddetails.view.FundDetailsViewModel
-import fundlist.domain.FundType
-import fundlist.domain.FundTypeRepository
 import fundlist.usecase.GetFundTypesUseCase
 import fundlist.usecase.GetFundsUseCase
 import fundlist.view.FundList
 import fundlist.view.FundListViewModel
+import ledger.obyte.ObyteBackend
+import ledger.obyte.obytejs.ObyteJsApi
+import ledger.obyte.obytejs.Testnet
 import navigation.NavHost
 import navigation.Navigator
 import navigation.Screen
-import obyte.MockObyteApi
-import obyte.ObyteFundDetailsRepository
-import obyte.ObyteFundListRepository
-import obyte.ObyteJsApi
-import obyte.Testnet
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.renderComposable
 import wallet.WalletWidget
 
 fun main() {
     val obyteApi = ObyteJsApi(Testnet)
+    val obyte = ObyteBackend(obyteApi)
 
-    val fundTypeRepository = HardCodedTypeRepository
-    val fundListRepository = ObyteFundListRepository(
-        baseAgentService = obyteApi,
-        assetMetadataService = obyteApi
-    )
+    val fundTypeRepository = obyte.fundTypeRepository
+    val fundListRepository = obyte.fundListRepository
+    val fundDetailsRepository = obyte.fundDetailsRepository
 
     val getFundTypesUseCase = GetFundTypesUseCase(fundTypeRepository)
     val getFundsUseCase = GetFundsUseCase(fundListRepository)
-
-    val fundDetailsRepository = ObyteFundDetailsRepository(
-        autonomousAgentService = obyteApi,
-        addressDefinitionService = obyteApi,
-        assetMetadataService = obyteApi,
-        balanceService = obyteApi
-    )
 
     renderComposable(rootElementId = "root") {
         val navigator = Navigator(root = Screen.Home)
@@ -65,15 +53,4 @@ fun main() {
             }
         }
     }
-}
-
-object HardCodedTypeRepository : FundTypeRepository {
-    override suspend fun getFundTypes(): List<FundType> = listOf(
-        FundType(
-            address = "FTKLXQND4LS65OTQK7RXOABB7DENBSEI",
-            description = "Two-asset fixed allocation fund",
-            version = "0.0.1"
-        )
-    )
-
 }
