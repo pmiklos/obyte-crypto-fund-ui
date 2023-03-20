@@ -33,8 +33,11 @@ class ObyteJsConfigurationService(client: Client) : ConfigurationService {
 
     override val network = if (client.options["testnet"] as Boolean) "testnet" else "livenet"
     override val node = client.client.address
-    override fun explorerUrl(unitOrAddress: String) = "https://testnetexplorer.obyte.org/#${unitOrAddress}"
-
+    override fun explorerUrl(unitOrAddress: String) = when (network) {
+        "testnet" -> "https://testnetexplorer.obyte.org/#${unitOrAddress}"
+        "livenet" -> "https://explorer.obyte.org/#${unitOrAddress}"
+        else -> "#"
+    }
 }
 
 class ObyteJsBaseAgentService(private val client: Client) : BaseAgentService {

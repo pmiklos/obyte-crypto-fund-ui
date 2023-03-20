@@ -6,6 +6,7 @@ import fundlist.domain.FundType
 import fundlist.domain.FundTypeRepository
 import network.domain.ConnectionStatus
 import network.domain.ConnectionStatusRepository
+import network.domain.ExplorerRepository
 
 class ObyteBackend(obyteApi: ObyteApi) {
     val fundTypeRepository: FundTypeRepository = object : FundTypeRepository {
@@ -35,5 +36,10 @@ class ObyteBackend(obyteApi: ObyteApi) {
             network = obyteApi.network,
             node = obyteApi.node
         )
+    }
+
+    val explorerRepository: ExplorerRepository = object : ExplorerRepository {
+        override fun getAddressUrl(address: String) = obyteApi.explorerUrl(address)
+        override fun getAssetUrl(asset: String) = obyteApi.explorerUrl(asset)
     }
 }

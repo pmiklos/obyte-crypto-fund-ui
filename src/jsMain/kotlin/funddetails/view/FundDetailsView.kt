@@ -67,8 +67,8 @@ private fun FundInformationPane(fundDetails: FundDetailsBean) {
                     Text("Fund Address")
                 }
                 Dd {
-                    A(href = "https://explorer.obyte.org/#${fundDetails.address}") {
-                        Text(fundDetails.address)
+                    A(href = fundDetails.address.explorerUrl) {
+                        Text(fundDetails.address.value)
                     }
                 }
                 Dt {
@@ -76,8 +76,8 @@ private fun FundInformationPane(fundDetails: FundDetailsBean) {
                 }
                 Dd {
                     Text(fundDetails.totalShares + " ")
-                    A(href = "https://explorer.obyte.org/#${fundDetails.shareAsset}") {
-                        Text(fundDetails.shareSymbol)
+                    A(href = fundDetails.shareAsset.explorerUrl) {
+                        Text(fundDetails.shareAsset.symbol)
                     }
                 }
             }

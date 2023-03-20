@@ -17,6 +17,8 @@ import network.view.NetworkInfoViewModel
 import navigation.NavHost
 import navigation.Navigator
 import navigation.Screen
+import network.usecase.GetAddressExplorerUseCase
+import network.usecase.GetAssetExplorerUseCase
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.renderComposable
 import wallet.WalletWidget
@@ -28,10 +30,12 @@ fun main() {
     val fundTypeRepository = obyte.fundTypeRepository
     val fundListRepository = obyte.fundListRepository
     val fundDetailsRepository = obyte.fundDetailsRepository
+    val connectionStatusRepository = obyte.connectionStatusRepository
+    val explorerRepository = obyte.explorerRepository
 
     val getFundTypesUseCase = GetFundTypesUseCase(fundTypeRepository)
     val getFundsUseCase = GetFundsUseCase(fundListRepository)
-    val getNetworkInfoUseCase = GetNetworkInfoUseCase(obyte.connectionStatusRepository)
+    val getNetworkInfoUseCase = GetNetworkInfoUseCase(connectionStatusRepository)
 
     renderComposable(rootElementId = "root") {
         val navigator = Navigator(root = Screen.Home)
@@ -52,6 +56,8 @@ fun main() {
                         FundDetailsViewModel(
                             GetFundDetailsUseCase(fundDetailsRepository),
                             CalculateAssetPaymentUseCase,
+                            GetAddressExplorerUseCase(explorerRepository),
+                            GetAssetExplorerUseCase(explorerRepository),
                             navigator
                         )
                     )

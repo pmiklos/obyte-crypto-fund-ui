@@ -3,9 +3,10 @@ package funddetails.view
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import common.Resource
+import funddetails.view.common.AddressBean
 import funddetails.view.component.AssetAllocationBean
 import funddetails.view.component.AssetAllocationTableBean
-import funddetails.view.component.AssetBean
+import funddetails.view.common.AssetBean
 import funddetails.view.component.AssetPaymentBean
 import funddetails.view.component.AssetPaymentTableBean
 import funddetails.domain.Balance
@@ -17,10 +18,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import navigation.Navigator
+import network.usecase.GetAddressExplorerUseCase
+import network.usecase.GetAssetExplorerUseCase
 
 class FundDetailsViewModel(
     private val getFundDetails: GetFundDetailsUseCase,
     private val calculateAssetPayment: CalculateAssetPaymentUseCase,
+    private val getAddressExplorer: GetAddressExplorerUseCase,
+    private val getAssetExplorer: GetAssetExplorerUseCase,
     navigator: Navigator,
 ) {
 
@@ -59,16 +64,23 @@ class FundDetailsViewModel(
                             _fundDetailsState.value =
                                 FundDetailsState(
                                     fundDetails = FundDetailsBean(
-                                        address = fundDetails.address,
+                                        address = AddressBean(
+                                            value = fundDetails.address,
+                                            explorerUrl = getAddressExplorer(fundDetails.address)
+                                        ),
                                         totalShares = fundDetails.totalShares.toFormattedNumber(),
-                                        shareAsset = fundDetails.totalShares.asset.hash,
-                                        shareSymbol = fundDetails.totalShares.asset.name,
+                                        shareAsset = AssetBean(
+                                            hash = fundDetails.totalShares.asset.hash,
+                                            symbol = fundDetails.totalShares.asset.name,
+                                            explorerUrl = getAssetExplorer(fundDetails.totalShares.asset.hash)
+                                        ),
                                         allocationTable = AssetAllocationTableBean(
                                             allocations = fundDetails.allocation.map { allocation ->
                                                 AssetAllocationBean(
                                                     asset = AssetBean(
                                                         symbol = allocation.balance.asset.name,
-                                                        hash = allocation.balance.asset.hash
+                                                        hash = allocation.balance.asset.hash,
+                                                        explorerUrl = getAssetExplorer(allocation.balance.asset.hash)
                                                     ),
                                                     balance = allocation.balance.toFormattedNumber(),
                                                     percentage = fundDetails.run {

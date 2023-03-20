@@ -1,6 +1,7 @@
 package funddetails.view.component
 
 import androidx.compose.runtime.Composable
+import funddetails.view.common.AssetBean
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Table
 import org.jetbrains.compose.web.dom.Tbody
@@ -32,7 +33,7 @@ fun AssetAllocationTable(model: AssetAllocationTableBean) {
             model.allocations.forEach { allocation ->
                 Tr {
                     Td {
-                        A(href="https://explorer.obyte.org/#${allocation.asset.hash}") {
+                        A(href=allocation.asset.explorerUrl) {
                             Text(allocation.asset.symbol)
                         }
                     }
@@ -49,5 +50,4 @@ fun AssetAllocationTable(model: AssetAllocationTableBean) {
 }
 
 data class AssetAllocationTableBean(val allocations: List<AssetAllocationBean>)
-data class AssetBean(val symbol: String, val hash: String)
 data class AssetAllocationBean(val asset: AssetBean, val percentage: String, val balance: String)
