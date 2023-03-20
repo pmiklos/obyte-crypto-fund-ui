@@ -8,6 +8,7 @@ import ledger.obyte.AssetMetadataService
 import ledger.obyte.AutonomousAgentService
 import ledger.obyte.BalanceService
 import ledger.obyte.BaseAgentService
+import ledger.obyte.ConfigurationService
 import ledger.obyte.ObyteApi
 import ledger.obyte.SubAgent
 import ledger.obyte.mock.MockAddressDefinitionService
@@ -21,13 +22,22 @@ class ObyteJsApi(
     AssetMetadataService by ObyteJsAssetMetadataService(obyte),
     AutonomousAgentService by MockAutonomousAgentService,
     BalanceService by MockBalanceService,
-    BaseAgentService by ObyteJsBaseAgentService(obyte)
+    BaseAgentService by ObyteJsBaseAgentService(obyte),
+    ConfigurationService by ObyteJsConfigurationService(obyte)
 
 val Testnet by lazy {
     Client("wss://obyte.org/bb-test", mapOf("testnet" to true))
 }
 
-class ObyteJsBaseAgentService(private val client: Client): BaseAgentService {
+class ObyteJsConfigurationService(client: Client) : ConfigurationService {
+
+    override val network = if (client.options["testnet"] as Boolean) "testnet" else "livenet"
+    override val node = client.client.address
+    override fun explorerUrl(unitOrAddress: String) = "https://testnetexplorer.obyte.org/#${unitOrAddress}"
+
+}
+
+class ObyteJsBaseAgentService(private val client: Client) : BaseAgentService {
 
     override suspend fun getSubAgents(baseAgent: String): List<SubAgent> {
         val subAgents = client.api.getAasByBaseAas(GetAasByBaseAasRequest().apply {
@@ -46,7 +56,7 @@ class ObyteJsBaseAgentService(private val client: Client): BaseAgentService {
     }
 }
 
-class ObyteJsAssetMetadataService(private val client: Client): AssetMetadataService {
+class ObyteJsAssetMetadataService(private val client: Client) : AssetMetadataService {
     override suspend fun getAssetMetadata(assetHash: String): AssetMetadata {
         val tokenRegistry = client.api.getOfficialTokenRegistryAddress() // tokens.ooo
         val symbol = client.api.getSymbolByAsset(tokenRegistry, assetHash).await()

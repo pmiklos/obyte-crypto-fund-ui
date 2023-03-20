@@ -1,4 +1,5 @@
 import androidx.compose.runtime.Composable
+import network.view.NetworkInfo
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H4
 import org.jetbrains.compose.web.dom.Header

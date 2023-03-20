@@ -5,7 +5,14 @@ package ledger.obyte.obytejs
 import kotlin.js.Promise
 
 external class Client(nodeAddress: String, options: Map<String, Any>) {
+    val options: Map<String, Any>
+    val client: WSClient
     val api: Api
+}
+
+external interface WSClient {
+    val address: String
+    val open: Boolean
 }
 
 external interface Api {

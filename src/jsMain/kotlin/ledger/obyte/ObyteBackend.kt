@@ -4,6 +4,8 @@ import funddetails.domain.FundDetailsRepository
 import fundlist.domain.FundListRepository
 import fundlist.domain.FundType
 import fundlist.domain.FundTypeRepository
+import network.domain.ConnectionStatus
+import network.domain.ConnectionStatusRepository
 
 class ObyteBackend(obyteApi: ObyteApi) {
     val fundTypeRepository: FundTypeRepository = object : FundTypeRepository {
@@ -27,4 +29,11 @@ class ObyteBackend(obyteApi: ObyteApi) {
         assetMetadataService = obyteApi,
         balanceService = obyteApi
     )
+
+    val connectionStatusRepository: ConnectionStatusRepository = object: ConnectionStatusRepository {
+        override suspend fun getConnectionStatus() = ConnectionStatus(
+            network = obyteApi.network,
+            node = obyteApi.node
+        )
+    }
 }

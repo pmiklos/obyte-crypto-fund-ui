@@ -1,6 +1,8 @@
 package ledger.obyte.mock
 
 import kotlinx.coroutines.delay
+import network.domain.ConnectionStatus
+import network.domain.ConnectionStatusRepository
 import ledger.obyte.AddressDefinition
 import ledger.obyte.AddressDefinitionService
 import ledger.obyte.AssetMetadata
@@ -9,6 +11,7 @@ import ledger.obyte.AutonomousAgentService
 import ledger.obyte.Balance
 import ledger.obyte.BalanceService
 import ledger.obyte.BaseAgentService
+import ledger.obyte.ConfigurationService
 import ledger.obyte.ObyteApi
 import ledger.obyte.SubAgent
 
@@ -17,7 +20,14 @@ object MockObyteApi : ObyteApi,
     AssetMetadataService by MockAssetMetadataService,
     AutonomousAgentService by MockAutonomousAgentService,
     BalanceService by MockBalanceService,
-    BaseAgentService by MockBaseAgentService
+    BaseAgentService by MockBaseAgentService,
+    ConfigurationService by MockConfigurationService
+
+object MockConfigurationService: ConfigurationService {
+    override val network = "MockNet"
+    override val node = "mock backend"
+    override fun explorerUrl(unitOrAddress: String) = "#"
+}
 
 object MockAssetMetadataService : AssetMetadataService {
     override suspend fun getAssetMetadata(assetHash: String): AssetMetadata {

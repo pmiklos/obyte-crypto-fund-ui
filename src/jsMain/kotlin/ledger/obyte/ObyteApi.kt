@@ -5,7 +5,8 @@ interface ObyteApi :
     AssetMetadataService,
     AutonomousAgentService,
     BalanceService,
-    BaseAgentService
+    BaseAgentService,
+    ConfigurationService
 
 data class AssetMetadata(val ticker: String, val decimals: Int)
 data class SubAgent(val address: String, val definition: AddressDefinition)
@@ -48,6 +49,8 @@ interface AutonomousAgentService {
     suspend fun getState(address: String): Map<String, String>
 }
 
-interface ExplorerService {
-    fun explorerUrl(unitOrAddress: String)
+interface ConfigurationService {
+    val network: String
+    val node: String
+    fun explorerUrl(unitOrAddress: String): String
 }
