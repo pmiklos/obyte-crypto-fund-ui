@@ -18,7 +18,7 @@ import ledger.obyte.mock.MockBalanceService
 class ObyteJsApi(
     obyte: Client,
 ) : ObyteApi,
-    AddressDefinitionService by MockAddressDefinitionService,
+    AddressDefinitionService by ObyteJsAddressDefinitionService(obyte),
     AssetMetadataService by ObyteJsAssetMetadataService(obyte),
     AutonomousAgentService by MockAutonomousAgentService,
     BalanceService by MockBalanceService,
@@ -27,6 +27,17 @@ class ObyteJsApi(
 
 val Testnet by lazy {
     Client("wss://obyte.org/bb-test", mapOf("testnet" to true))
+}
+
+class ObyteJsAddressDefinitionService(private val client: Client): AddressDefinitionService {
+    override suspend fun getDefinitionForAddress(address: String): AddressDefinition {
+        val response = client.api.getDefinition(address).await()
+
+        return AddressDefinition(
+            type = response[0] as String,
+            params = response[1].unsafeCast<Map<String, Any>>()
+        )
+    }
 }
 
 class ObyteJsConfigurationService(client: Client) : ConfigurationService {

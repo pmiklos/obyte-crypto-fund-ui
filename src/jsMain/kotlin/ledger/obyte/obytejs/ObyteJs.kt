@@ -21,6 +21,7 @@ external interface Api {
     fun getOfficialTokenRegistryAddress(): String
     fun getSymbolByAsset(registry: String, asset: String): Promise<String>
     fun getDecimalsBySymbolOrAsset(registry: String, assetOrSymbol: String): Promise<Int>
+    fun getDefinition(address: String): Promise<Array<Any>>
 }
 
 external interface GetAasByBaseAasRequest {
