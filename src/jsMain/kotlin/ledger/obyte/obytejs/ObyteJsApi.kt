@@ -11,8 +11,6 @@ import ledger.obyte.BaseAgentService
 import ledger.obyte.ConfigurationService
 import ledger.obyte.ObyteApi
 import ledger.obyte.SubAgent
-import ledger.obyte.mock.MockAddressDefinitionService
-import ledger.obyte.mock.MockAutonomousAgentService
 import ledger.obyte.mock.MockBalanceService
 
 class ObyteJsApi(
@@ -20,7 +18,7 @@ class ObyteJsApi(
 ) : ObyteApi,
     AddressDefinitionService by ObyteJsAddressDefinitionService(obyte),
     AssetMetadataService by ObyteJsAssetMetadataService(obyte),
-    AutonomousAgentService by MockAutonomousAgentService,
+    AutonomousAgentService by ObyteJsAutonomousAgentService(obyte),
     BalanceService by MockBalanceService,
     BaseAgentService by ObyteJsBaseAgentService(obyte),
     ConfigurationService by ObyteJsConfigurationService(obyte)
@@ -29,7 +27,7 @@ val Testnet by lazy {
     Client("wss://obyte.org/bb-test", mapOf("testnet" to true))
 }
 
-class ObyteJsAddressDefinitionService(private val client: Client): AddressDefinitionService {
+class ObyteJsAddressDefinitionService(private val client: Client) : AddressDefinitionService {
     override suspend fun getDefinitionForAddress(address: String): AddressDefinition {
         val response = client.api.getDefinition(address).await()
 
@@ -37,6 +35,18 @@ class ObyteJsAddressDefinitionService(private val client: Client): AddressDefini
             type = response[0] as String,
             params = response[1].unsafeCast<Map<String, Any>>()
         )
+    }
+}
+
+class ObyteJsAutonomousAgentService(private val client: Client) : AutonomousAgentService {
+    override suspend fun getState(address: String): Map<String, String> {
+        val vars = client.api.getAaStateVars(GetAaStateVarsRequest().apply {
+            this.address = address
+        }).await()
+
+        return (js("Object.entries") as (dynamic) -> Array<Array<Any?>>)
+            .invoke(vars)
+            .associate { entry -> entry[0] as String to entry[1] as String }
     }
 }
 
@@ -85,3 +95,4 @@ class ObyteJsAssetMetadataService(private val client: Client) : AssetMetadataSer
 }
 
 private fun GetAasByBaseAasRequest(): GetAasByBaseAasRequest = js("{}")
+private fun GetAaStateVarsRequest(): GetAaStateVarsRequest = js("{}")
