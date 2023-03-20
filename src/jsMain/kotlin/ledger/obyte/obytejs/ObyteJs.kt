@@ -23,6 +23,7 @@ external interface Api {
     fun getDecimalsBySymbolOrAsset(registry: String, assetOrSymbol: String): Promise<Int>
     fun getDefinition(address: String): Promise<Array<Any>>
     fun getAaStateVars(params: GetAaStateVarsRequest): Promise<dynamic>
+    fun getBalances(addresses: Array<String>): Promise<dynamic>
 }
 
 external interface GetAasByBaseAasRequest {
@@ -37,4 +38,9 @@ external interface GetAasByBaseAasResponse {
 external interface GetAaStateVarsRequest {
     var address: String
     var var_prefix: String?
+}
+
+external interface BalanceResponse {
+    val stable: Long
+    val pending: Long
 }

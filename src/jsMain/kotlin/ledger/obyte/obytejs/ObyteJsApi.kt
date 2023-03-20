@@ -6,6 +6,7 @@ import ledger.obyte.AddressDefinitionService
 import ledger.obyte.AssetMetadata
 import ledger.obyte.AssetMetadataService
 import ledger.obyte.AutonomousAgentService
+import ledger.obyte.Balance
 import ledger.obyte.BalanceService
 import ledger.obyte.BaseAgentService
 import ledger.obyte.ConfigurationService
@@ -19,7 +20,7 @@ class ObyteJsApi(
     AddressDefinitionService by ObyteJsAddressDefinitionService(obyte),
     AssetMetadataService by ObyteJsAssetMetadataService(obyte),
     AutonomousAgentService by ObyteJsAutonomousAgentService(obyte),
-    BalanceService by MockBalanceService,
+    BalanceService by ObyteJsBalanceService(obyte),
     BaseAgentService by ObyteJsBaseAgentService(obyte),
     ConfigurationService by ObyteJsConfigurationService(obyte)
 
@@ -48,6 +49,26 @@ class ObyteJsAutonomousAgentService(private val client: Client) : AutonomousAgen
             .invoke(vars)
             .associate { entry -> entry[0] as String to entry[1] as String }
     }
+}
+
+class ObyteJsBalanceService(private val client: Client): BalanceService {
+    override suspend fun getBalances(addresses: List<String>): Map<String, Map<String, Balance>> {
+        val balances = client.api.getBalances(addresses.toTypedArray()).await()
+
+        return (js("Object.entries") as (dynamic) -> Array<Array<Any?>>)
+            .invoke(balances)
+            .associate { (address, balances) -> address as String to balances }
+            .mapValues { (_, balances) ->
+                (js("Object.entries") as (dynamic) -> Array<Array<Any?>>)
+                    .invoke(balances.asDynamic())
+                    .associate { (asset, balance) -> asset as String to balance.unsafeCast<BalanceResponse>() }
+                    .mapValues { (_, balance) -> Balance(
+                        stable = balance.stable,
+                        pending = balance.pending
+                    ) }
+            }
+    }
+
 }
 
 class ObyteJsConfigurationService(client: Client) : ConfigurationService {
