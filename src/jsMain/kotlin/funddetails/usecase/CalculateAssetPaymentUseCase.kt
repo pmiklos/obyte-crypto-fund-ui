@@ -11,6 +11,13 @@ object CalculateAssetPaymentUseCase {
         totalShares: Balance,
         sharesToBuy: Double
     ): List<Balance> {
+        if (totalShares.amount == 0L) {
+            return allocation.map {
+                it.balance.copy(
+                    amount = (it.targetPercentage * sharesToBuy).toLong()
+                )
+            }
+        }
         val percentage = sharesToBuy / totalShares
         return allocation.map { it.balance * percentage }
     }

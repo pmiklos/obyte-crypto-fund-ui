@@ -18,9 +18,9 @@ class ObyteFundDetailsRepository(
         val addressDefinition = addressDefinitionService.getDefinitionForAddress(address)
         val fundDefinition = addressDefinition.asFundDefinition()
 
-        val shareAsset = state["asset"] ?: throw RuntimeException("Fund not initialized")
+        val shareAsset = state["asset"] as? String ?: throw RuntimeException("Fund not initialized")
         val shareAssetMetadata = assetMetadataService.getAssetMetadata(shareAsset)
-        val sharesIssued = state["shares"]?.toLong() ?: 0
+        val sharesIssued = (state["total_shares"] as? Double)?.toLong() ?: 0L
 
         return FundDetails(
             address = address,

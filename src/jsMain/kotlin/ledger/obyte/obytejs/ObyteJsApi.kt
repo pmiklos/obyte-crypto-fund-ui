@@ -12,7 +12,6 @@ import ledger.obyte.BaseAgentService
 import ledger.obyte.ConfigurationService
 import ledger.obyte.ObyteApi
 import ledger.obyte.SubAgent
-import ledger.obyte.mock.MockBalanceService
 
 class ObyteJsApi(
     obyte: Client,
@@ -40,14 +39,14 @@ class ObyteJsAddressDefinitionService(private val client: Client) : AddressDefin
 }
 
 class ObyteJsAutonomousAgentService(private val client: Client) : AutonomousAgentService {
-    override suspend fun getState(address: String): Map<String, String> {
+    override suspend fun getState(address: String): Map<String, Any?> {
         val vars = client.api.getAaStateVars(GetAaStateVarsRequest().apply {
             this.address = address
         }).await()
 
         return (js("Object.entries") as (dynamic) -> Array<Array<Any?>>)
             .invoke(vars)
-            .associate { entry -> entry[0] as String to entry[1] as String }
+            .associate { (key, value) -> key as String to value }
     }
 }
 
@@ -63,8 +62,8 @@ class ObyteJsBalanceService(private val client: Client): BalanceService {
                     .invoke(balances.asDynamic())
                     .associate { (asset, balance) -> asset as String to balance.unsafeCast<BalanceResponse>() }
                     .mapValues { (_, balance) -> Balance(
-                        stable = balance.stable,
-                        pending = balance.pending
+                        stable = balance.stable.toLong(),
+                        pending = balance.pending.toLong()
                     ) }
             }
     }

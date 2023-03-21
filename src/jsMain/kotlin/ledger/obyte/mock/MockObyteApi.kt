@@ -1,8 +1,6 @@
 package ledger.obyte.mock
 
 import kotlinx.coroutines.delay
-import network.domain.ConnectionStatus
-import network.domain.ConnectionStatusRepository
 import ledger.obyte.AddressDefinition
 import ledger.obyte.AddressDefinitionService
 import ledger.obyte.AssetMetadata
@@ -122,10 +120,10 @@ object MockBalanceService : BalanceService {
 }
 
 object MockAutonomousAgentService : AutonomousAgentService {
-    override suspend fun getState(address: String): Map<String, String> {
+    override suspend fun getState(address: String): Map<String, Any?> {
         return mapOf(
             "asset" to "GFmWjNQKoJcRPdc5ms22/p14izrM5QUDWKPFoPRccV0=",
-            "shares" to "873405271"
+            "total_shares" to 873405271.toDouble()
         )
     }
 }

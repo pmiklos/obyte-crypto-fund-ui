@@ -46,7 +46,7 @@ interface BalanceService {
 }
 
 interface AutonomousAgentService {
-    suspend fun getState(address: String): Map<String, String>
+    suspend fun getState(address: String): Map<String, Any?>
 }
 
 interface ConfigurationService {

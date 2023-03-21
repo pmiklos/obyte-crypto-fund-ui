@@ -41,6 +41,6 @@ external interface GetAaStateVarsRequest {
 }
 
 external interface BalanceResponse {
-    val stable: Long
-    val pending: Long
+    val stable: Double
+    val pending: Double
 }
