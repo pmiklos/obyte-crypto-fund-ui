@@ -3,6 +3,7 @@ package funddetails.view
 import androidx.compose.runtime.Composable
 import bootstrap.AddOn
 import bootstrap.ButtonBlock
+import bootstrap.ButtonLinkPrimary
 import bootstrap.ButtonPrimary
 import bootstrap.Card
 import bootstrap.CardBody
@@ -133,9 +134,9 @@ private fun BuySharesPane(
         AssetPaymentTable(tradingState.assetPaymentTable, label = "Payable")
 
         ButtonBlock {
-            ButtonPrimary(attrs = {
+            ButtonLinkPrimary(href = tradingState.assetPaymentUrl, attrs = {
                 if (!tradingState.sharesBuyable) {
-                    disabled()
+                    classes("disabled")
                 }
             }) {
                 Text("Buy Shares")

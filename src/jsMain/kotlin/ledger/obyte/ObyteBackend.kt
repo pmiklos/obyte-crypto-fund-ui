@@ -32,7 +32,7 @@ class ObyteBackend(obyteApi: ObyteApi) {
     )
 
     val connectionStatusRepository: ConnectionStatusRepository = object: ConnectionStatusRepository {
-        override suspend fun getConnectionStatus() = ConnectionStatus(
+        override fun getConnectionStatus() = ConnectionStatus(
             network = obyteApi.network,
             node = obyteApi.node
         )

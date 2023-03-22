@@ -8,7 +8,6 @@ import fundlist.usecase.GetFundsUseCase
 import fundlist.view.FundList
 import fundlist.view.FundListViewModel
 import ledger.obyte.ObyteBackend
-import ledger.obyte.mock.MockObyteApi
 import ledger.obyte.obytejs.ObyteJsApi
 import ledger.obyte.obytejs.Testnet
 import network.usecase.GetNetworkInfoUseCase
@@ -17,6 +16,7 @@ import network.view.NetworkInfoViewModel
 import navigation.NavHost
 import navigation.Navigator
 import navigation.Screen
+import network.usecase.CreateFundShareIssuanceUriUseCase
 import network.usecase.GetAddressExplorerUseCase
 import network.usecase.GetAssetExplorerUseCase
 import org.jetbrains.compose.web.dom.Main
@@ -58,6 +58,7 @@ fun main() {
                             CalculateAssetPaymentUseCase,
                             GetAddressExplorerUseCase(explorerRepository),
                             GetAssetExplorerUseCase(explorerRepository),
+                            CreateFundShareIssuanceUriUseCase(connectionStatusRepository),
                             navigator
                         )
                     )

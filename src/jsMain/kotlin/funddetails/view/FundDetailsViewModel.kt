@@ -3,21 +3,22 @@ package funddetails.view
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import common.Resource
-import funddetails.view.common.AddressBean
-import funddetails.view.component.AssetAllocationBean
-import funddetails.view.component.AssetAllocationTableBean
-import funddetails.view.common.AssetBean
-import funddetails.view.component.AssetPaymentBean
-import funddetails.view.component.AssetPaymentTableBean
 import funddetails.domain.Balance
 import funddetails.usecase.CalculateAssetPaymentUseCase
 import funddetails.usecase.GetFundDetailsUseCase
+import funddetails.view.common.AddressBean
+import funddetails.view.common.AssetBean
+import funddetails.view.component.AssetAllocationBean
+import funddetails.view.component.AssetAllocationTableBean
+import funddetails.view.component.AssetPaymentBean
+import funddetails.view.component.AssetPaymentTableBean
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import navigation.Navigator
+import network.usecase.CreateFundShareIssuanceUriUseCase
 import network.usecase.GetAddressExplorerUseCase
 import network.usecase.GetAssetExplorerUseCase
 
@@ -26,6 +27,7 @@ class FundDetailsViewModel(
     private val calculateAssetPayment: CalculateAssetPaymentUseCase,
     private val getAddressExplorer: GetAddressExplorerUseCase,
     private val getAssetExplorer: GetAssetExplorerUseCase,
+    private val createFundShareIssuanceUri: CreateFundShareIssuanceUriUseCase,
     navigator: Navigator,
 ) {
 
@@ -92,6 +94,7 @@ class FundDetailsViewModel(
                                     )
                                 )
                             _tradingState.value = TradingBean(
+                                fundAddress = fundDetails.address,
                                 sharesToBuy = "",
                                 shareSymbol = fundDetails.totalShares.asset.name,
                                 allocation = fundDetails.allocation,
@@ -141,12 +144,16 @@ class FundDetailsViewModel(
                         amount = payment.toFormattedNumber()
                     )
                 }
+            ),
+            assetPaymentUrl = createFundShareIssuanceUri(
+                address = fundAddress,
+                assets = assetPayments.associate { it.asset.hash to it.amount }.toMap()
             )
         )
     }
 
     fun updateRedemption(sharesToRedeem: String) = with(tradingState.value) {
-        val sharesToRedeemAmount = sharesToRedeem.toDoubleOrNull()?: 0.0
+        val sharesToRedeemAmount = sharesToRedeem.toDoubleOrNull() ?: 0.0
         val assetRedemption = calculateAssetPayment(allocation, totalShares, sharesToRedeemAmount)
 
         _tradingState.value = copy(

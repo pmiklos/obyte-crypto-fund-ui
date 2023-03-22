@@ -1,11 +1,12 @@
 package bootstrap
 
 import androidx.compose.runtime.Composable
+import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Text
+import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLDivElement
 
@@ -18,6 +19,19 @@ fun ButtonPrimary(
         classes("btn", "btn-primary")
         attrs?.invoke(this)
     }, content = content)
+}
+
+@Composable
+fun ButtonLinkPrimary(
+    href: String?,
+    attrs: AttrBuilderContext<HTMLAnchorElement>? = null,
+    content: ContentBuilder<HTMLAnchorElement>? = null
+) {
+    A(href = href,
+        attrs = {
+            classes("btn", "btn-primary")
+            attrs?.invoke(this)
+        }, content = content)
 }
 
 @Composable
