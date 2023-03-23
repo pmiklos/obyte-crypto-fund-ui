@@ -4,7 +4,6 @@ import funddetails.domain.FundDetailsRepository
 import fundlist.domain.FundListRepository
 import fundlist.domain.FundType
 import fundlist.domain.FundTypeRepository
-import network.domain.ConnectionStatus
 import network.domain.ConnectionStatusRepository
 import network.domain.ExplorerRepository
 
@@ -31,12 +30,7 @@ class ObyteBackend(obyteApi: ObyteApi) {
         balanceService = obyteApi
     )
 
-    val connectionStatusRepository: ConnectionStatusRepository = object: ConnectionStatusRepository {
-        override fun getConnectionStatus() = ConnectionStatus(
-            network = obyteApi.network,
-            node = obyteApi.node
-        )
-    }
+    val connectionStatusRepository: ConnectionStatusRepository = ObyteConnectionStatusRepository(obyteApi)
 
     val explorerRepository: ExplorerRepository = object : ExplorerRepository {
         override fun getAddressUrl(address: String) = obyteApi.explorerUrl(address)

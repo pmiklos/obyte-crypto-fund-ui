@@ -7,7 +7,7 @@ import network.domain.ConnectionStatusRepository
 class CreateFundShareIssuanceUriUseCase(private val connectionStatusRepository: ConnectionStatusRepository) {
 
     // TODO these are all Obyte specific, this should not be in the use-case
-    private val protocol get() = when (connectionStatusRepository.getConnectionStatus().network) {
+    private val protocol get() = when (connectionStatusRepository.getConnectionStatus().network.name) {
         "testnet" -> "obyte-tn"
         "livenet" -> "obyte"
         else -> ""

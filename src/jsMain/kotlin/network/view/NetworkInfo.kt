@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import network.usecase.GetNetworkInfoUseCase
+import org.jetbrains.compose.web.dom.A
+import org.jetbrains.compose.web.dom.Br
 import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Hr
 import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.Ul
@@ -32,10 +35,26 @@ fun NetworkInfo(
         Ul(
             attrs = { classes("dropdown-menu") }
         ) {
+            networkInfo.links.forEach { (label, uri) ->
+                Li {
+                    A(href = uri, attrs = { classes("dropdown-item") }) {
+                        Text(label)
+                    }
+                }
+            }
+
+            if (!networkInfo.links.isEmpty()) {
+                Li {
+                    Hr(attrs = { classes("dropdown-divider") })
+                }
+            }
+
             Li(attrs = { classes("dropdown-item") }) {
                 if (networkInfo.error.isNotBlank()) {
                     Text(networkInfo.error)
                 } else {
+                    Text(networkInfo.description)
+                    Br()
                     Text("Connected to ${networkInfo.node}")
                 }
             }
@@ -68,8 +87,12 @@ class NetworkInfoViewModel(
 
                     is Resource.Success -> result.data?.let {
                         _state.value = NetworkInfoBean(
-                            network = it.network,
-                            node = it.node
+                            network = it.network.name,
+                            description = it.network.description,
+                            node = it.node,
+                            links = it.network.links.associate { link ->
+                                link.label to link.uri
+                            }.toMap()
                         )
                     }
                 }
@@ -80,6 +103,8 @@ class NetworkInfoViewModel(
 
 data class NetworkInfoBean(
     val network: String = "-",
+    val description: String = "",
     val node: String = "-",
-    val error: String = ""
+    val error: String = "",
+    val links: Map<String, String> = emptyMap()
 )
