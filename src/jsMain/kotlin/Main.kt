@@ -1,5 +1,6 @@
 import androidx.compose.runtime.mutableStateOf
 import funddetails.usecase.CalculateAssetPaymentUseCase
+import funddetails.usecase.CreateAssetRedemptionUriUseCase
 import funddetails.usecase.GetFundDetailsUseCase
 import funddetails.view.FundDetails
 import funddetails.view.FundDetailsViewModel
@@ -16,7 +17,8 @@ import network.view.NetworkInfoViewModel
 import navigation.NavHost
 import navigation.Navigator
 import navigation.Screen
-import network.usecase.CreateFundShareIssuanceUriUseCase
+import funddetails.usecase.CreateFundShareIssuanceUriUseCase
+import funddetails.usecase.ObyteWalletUriBuilder
 import network.usecase.GetAddressExplorerUseCase
 import network.usecase.GetAssetExplorerUseCase
 import org.jetbrains.compose.web.dom.Main
@@ -32,6 +34,7 @@ fun main() {
     val fundDetailsRepository = obyte.fundDetailsRepository
     val connectionStatusRepository = obyte.connectionStatusRepository
     val explorerRepository = obyte.explorerRepository
+    val walletUriBuilder = ObyteWalletUriBuilder(connectionStatusRepository)
 
     val getFundTypesUseCase = GetFundTypesUseCase(fundTypeRepository)
     val getFundsUseCase = GetFundsUseCase(fundListRepository)
@@ -58,7 +61,8 @@ fun main() {
                             CalculateAssetPaymentUseCase,
                             GetAddressExplorerUseCase(explorerRepository),
                             GetAssetExplorerUseCase(explorerRepository),
-                            CreateFundShareIssuanceUriUseCase(connectionStatusRepository),
+                            CreateFundShareIssuanceUriUseCase(walletUriBuilder),
+                            CreateAssetRedemptionUriUseCase(walletUriBuilder),
                             navigator
                         )
                     )

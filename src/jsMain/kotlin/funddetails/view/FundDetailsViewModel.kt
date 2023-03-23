@@ -3,8 +3,10 @@ package funddetails.view
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import common.Resource
+import common.movePointRight
 import funddetails.domain.Balance
 import funddetails.usecase.CalculateAssetPaymentUseCase
+import funddetails.usecase.CreateAssetRedemptionUriUseCase
 import funddetails.usecase.GetFundDetailsUseCase
 import funddetails.view.common.AddressBean
 import funddetails.view.common.AssetBean
@@ -18,7 +20,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import navigation.Navigator
-import network.usecase.CreateFundShareIssuanceUriUseCase
+import funddetails.usecase.CreateFundShareIssuanceUriUseCase
 import network.usecase.GetAddressExplorerUseCase
 import network.usecase.GetAssetExplorerUseCase
 
@@ -28,6 +30,7 @@ class FundDetailsViewModel(
     private val getAddressExplorer: GetAddressExplorerUseCase,
     private val getAssetExplorer: GetAssetExplorerUseCase,
     private val createFundShareIssuanceUri: CreateFundShareIssuanceUriUseCase,
+    private val createAssetRedemptionUri: CreateAssetRedemptionUriUseCase,
     navigator: Navigator,
 ) {
 
@@ -147,7 +150,7 @@ class FundDetailsViewModel(
             ),
             assetPaymentUrl = createFundShareIssuanceUri(
                 address = fundAddress,
-                assets = assetPayments.associate { it.asset.hash to it.amount }.toMap()
+                assetPayments = assetPayments.associate { it.asset.hash to it.amount }.toMap()
             )
         )
     }
@@ -165,6 +168,11 @@ class FundDetailsViewModel(
                         amount = redemption.toFormattedNumber()
                     )
                 }
+            ),
+            assetRedemptionUrl = createAssetRedemptionUri(
+                address = fundAddress,
+                shareAsset = totalShares.asset.hash,
+                shareAmount = sharesToRedeemAmount.movePointRight(totalShares.asset.decimals).toLong()
             )
         )
     }

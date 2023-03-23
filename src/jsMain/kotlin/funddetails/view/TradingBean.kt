@@ -14,7 +14,8 @@ data class TradingBean(
     val totalShares: Balance = Balance(Asset("", "", 0), 0),
     val assetPaymentTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList()),
     val assetRedemptionTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList()),
-    val assetPaymentUrl: String = ""
+    val assetPaymentUrl: String = "",
+    val assetRedemptionUrl: String = ""
 ) {
     val sharesBuyable = sharesToBuy.toDoubleOrNull()?.run {
         this > 0.0

@@ -166,9 +166,9 @@ private fun RedemptionPane(
         AssetPaymentTable(tradingState.assetRedemptionTable, label = "Redeemable")
 
         ButtonBlock {
-            ButtonPrimary(attrs = {
+            ButtonLinkPrimary(href = tradingState.assetRedemptionUrl, attrs = {
                 if (!tradingState.sharesRedeemable) {
-                    disabled()
+                    classes("disabled")
                 }
             }) {
                 Text("Redeem Assets")
