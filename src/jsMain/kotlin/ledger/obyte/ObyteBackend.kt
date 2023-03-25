@@ -20,7 +20,8 @@ class ObyteBackend(obyteApi: ObyteApi) {
 
     val fundListRepository: FundListRepository = ObyteFundListRepository(
         baseAgentService = obyteApi,
-        assetMetadataService = obyteApi
+        assetMetadataService = obyteApi,
+        autonomousAgentService = obyteApi
     )
 
     val fundDetailsRepository: FundDetailsRepository = ObyteFundDetailsRepository(

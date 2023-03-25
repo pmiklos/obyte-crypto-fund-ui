@@ -35,11 +35,15 @@ class FundListViewModel(
                 when (result) {
                     is Resource.Success -> result.data?.let { newFunds ->
                         _state.value = FundListState()
-                        _funds.addAll(newFunds.map {
+                        _funds.addAll(newFunds.map { fund ->
                             FundSummaryBean(
-                                address = it.address,
-                                description = it.portfolio.joinToString(" ") {
-                                    "${it.assetName} (${it.percentage}%)"
+                                address = fund.address,
+                                description = fund.assetName + fund.portfolio.joinToString(
+                                    separator = ", ",
+                                    prefix = " (",
+                                    postfix = ")"
+                                ) {
+                                    it.assetName
                                 },
                                 baseFund = baseFund.address,
                                 version = baseFund.version
