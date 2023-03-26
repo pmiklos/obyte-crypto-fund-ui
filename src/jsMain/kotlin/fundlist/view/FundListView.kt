@@ -23,11 +23,11 @@ fun FundList(viewModel: FundListViewModel) {
                     href(Screen.Details.href(fund.address))
                 }
             ) {
-                ListGroupItemHeading(fund.description, fund.version)
+                ListGroupItemHeading(fund.summary, fund.version)
                 P(attrs = {
                     classes("mb-1")
                 }) {
-                    Text("More information about this fund")
+                    Text(fund.description)
                 }
                 Small { Text(fund.address) }
             }

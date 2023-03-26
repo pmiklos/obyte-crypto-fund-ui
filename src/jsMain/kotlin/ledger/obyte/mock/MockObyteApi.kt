@@ -33,17 +33,20 @@ object MockAssetMetadataService : AssetMetadataService {
         return when (assetHash) {
             "q7QPuV2Gd31wcXUeg/IRxfD0Q1kWimei7g+IFKJaIXc=" -> AssetMetadata(
                 ticker = "PYPL",
-                decimals = 6
+                decimals = 6,
+                description = "Paypal stock"
             )
 
             "cr0klQISM8PqhjFRXnKK20O9DRq5Yrcx3eEE1xBoCjw=" -> AssetMetadata(
                 ticker = "FISV",
-                decimals = 4
+                decimals = 4,
+                description = "Fiserv stock"
             )
 
             "GFmWjNQKoJcRPdc5ms22/p14izrM5QUDWKPFoPRccV0=" -> AssetMetadata(
                 ticker = "FUND-FINX",
-                decimals = 4
+                decimals = 4,
+                description = "Crypto fund tracking a basket of PYPL and FSRV stocks"
             )
 
             else -> throw RuntimeException("No such asset")

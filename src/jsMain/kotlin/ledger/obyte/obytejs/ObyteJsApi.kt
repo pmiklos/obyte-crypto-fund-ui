@@ -44,13 +44,11 @@ class ObyteJsAutonomousAgentService(private val client: Client) : AutonomousAgen
             this.address = address
         }).await()
 
-        return (js("Object.entries") as (dynamic) -> Array<Array<Any?>>)
-            .invoke(vars)
-            .associate { (key, value) -> key as String to value }
+        return jsObjectToMap(vars)
     }
 }
 
-class ObyteJsBalanceService(private val client: Client): BalanceService {
+class ObyteJsBalanceService(private val client: Client) : BalanceService {
     override suspend fun getBalances(addresses: List<String>): Map<String, Map<String, Balance>> {
         val balances = client.api.getBalances(addresses.toTypedArray()).await()
 
@@ -61,10 +59,12 @@ class ObyteJsBalanceService(private val client: Client): BalanceService {
                 (js("Object.entries") as (dynamic) -> Array<Array<Any?>>)
                     .invoke(balances.asDynamic())
                     .associate { (asset, balance) -> asset as String to balance.unsafeCast<BalanceResponse>() }
-                    .mapValues { (_, balance) -> Balance(
-                        stable = balance.stable.toLong(),
-                        pending = balance.pending.toLong()
-                    ) }
+                    .mapValues { (_, balance) ->
+                        Balance(
+                            stable = balance.stable.toLong(),
+                            pending = balance.pending.toLong()
+                        )
+                    }
             }
     }
 
@@ -101,18 +101,23 @@ class ObyteJsBaseAgentService(private val client: Client) : BaseAgentService {
 }
 
 class ObyteJsAssetMetadataService(private val client: Client) : AssetMetadataService {
+
+    private val registries = AssetRegistries(client)
+
     override suspend fun getAssetMetadata(assetHash: String): AssetMetadata {
-        val tokenRegistry = client.api.getOfficialTokenRegistryAddress() // tokens.ooo
-        val symbol = client.api.getSymbolByAsset(tokenRegistry, assetHash).await()
-        val decimals = client.api.getDecimalsBySymbolOrAsset(tokenRegistry, assetHash).await()
+        val registryUnit = client.api.getAssetMetadata(assetHash).await()
+        val metadataJoint = client.api.getJoint(registryUnit.metadata_unit).await()
+        val registry = registries[registryUnit.registry_address]
 
-        return AssetMetadata(
-            ticker = symbol,
-            decimals = decimals
-        )
+        return try {
+            registry.getAssetMetadata(metadataJoint.joint.unit)
+        } catch (e: Exception) {
+            console.log(e)
+            AssetMetadata(
+                ticker = assetHash,
+                decimals = 0,
+                description = ""
+            )
+        }
     }
-
 }
-
-private fun GetAasByBaseAasRequest(): GetAasByBaseAasRequest = js("{}")
-private fun GetAaStateVarsRequest(): GetAaStateVarsRequest = js("{}")

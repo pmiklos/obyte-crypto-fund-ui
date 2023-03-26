@@ -18,6 +18,8 @@ external interface WSClient {
 external interface Api {
     fun getWitnesses(): Promise<Array<String>>
     fun getAasByBaseAas(params: GetAasByBaseAasRequest): Promise<Array<GetAasByBaseAasResponse>>
+    fun getAssetMetadata(asset: String): Promise<RegistryUnit>
+    fun getJoint(unit: String): Promise<JointResponse>
     fun getOfficialTokenRegistryAddress(): String
     fun getSymbolByAsset(registry: String, asset: String): Promise<String>
     fun getDecimalsBySymbolOrAsset(registry: String, assetOrSymbol: String): Promise<Int>
@@ -43,4 +45,40 @@ external interface GetAaStateVarsRequest {
 external interface BalanceResponse {
     val stable: Double
     val pending: Double
+}
+
+external interface RegistryUnit {
+    val metadata_unit: String
+    val registry_address: String
+    val suffix: String?
+}
+
+external interface JointResponse {
+    val joint: Joint
+}
+
+external interface Joint {
+    val unit: Unit
+}
+
+external interface Unit {
+    val unit: String
+    val version: String
+    val alt: String
+    val messages: Array<Message>
+}
+
+external interface Message {
+    val app: String
+    val payload: Any
+}
+
+external interface AssetMetadataPayload {
+    val asset: String
+    val decimals: Int
+    val name: String
+    val shortName: String?
+    val issuer: String?
+    val ticker: String?
+    val description: String?
 }

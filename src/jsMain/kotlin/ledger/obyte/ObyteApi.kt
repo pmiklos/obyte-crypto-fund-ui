@@ -8,7 +8,7 @@ interface ObyteApi :
     BaseAgentService,
     ConfigurationService
 
-data class AssetMetadata(val ticker: String, val decimals: Int)
+data class AssetMetadata(val ticker: String, val decimals: Int, val description: String)
 data class SubAgent(val address: String, val definition: AddressDefinition)
 data class AddressDefinition(val type: String, val params: Map<String, Any>)
 data class Balance(val stable: Long, val pending: Long)

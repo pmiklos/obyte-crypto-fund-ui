@@ -38,13 +38,14 @@ class FundListViewModel(
                         _funds.addAll(newFunds.map { fund ->
                             FundSummaryBean(
                                 address = fund.address,
-                                description = fund.assetName + fund.portfolio.joinToString(
+                                summary = fund.assetName + fund.portfolio.joinToString(
                                     separator = ", ",
                                     prefix = " (",
                                     postfix = ")"
                                 ) {
                                     it.assetName
                                 },
+                                description = fund.description,
                                 baseFund = baseFund.address,
                                 version = baseFund.version
                             )
@@ -67,6 +68,7 @@ class FundListViewModel(
 
 data class FundSummaryBean(
     val address: String,
+    val summary: String,
     val description: String,
     val baseFund: String,
     val version: String,
