@@ -27,7 +27,7 @@ val Testnet by lazy {
     Client("wss://obyte.org/bb-test", mapOf("testnet" to true))
 }
 
-class ObyteJsAddressDefinitionService(private val client: Client) : AddressDefinitionService {
+private class ObyteJsAddressDefinitionService(private val client: Client) : AddressDefinitionService {
     override suspend fun getDefinitionForAddress(address: String): AddressDefinition {
         val response = client.api.getDefinition(address).await()
 
@@ -38,7 +38,7 @@ class ObyteJsAddressDefinitionService(private val client: Client) : AddressDefin
     }
 }
 
-class ObyteJsAutonomousAgentService(private val client: Client) : AutonomousAgentService {
+private class ObyteJsAutonomousAgentService(private val client: Client) : AutonomousAgentService {
     override suspend fun getState(address: String): Map<String, Any?> {
         val vars = client.api.getAaStateVars(GetAaStateVarsRequest().apply {
             this.address = address
@@ -48,7 +48,7 @@ class ObyteJsAutonomousAgentService(private val client: Client) : AutonomousAgen
     }
 }
 
-class ObyteJsBalanceService(private val client: Client) : BalanceService {
+private class ObyteJsBalanceService(private val client: Client) : BalanceService {
     override suspend fun getBalances(addresses: List<String>): Map<String, Map<String, Balance>> {
         val balances = client.api.getBalances(addresses.toTypedArray()).await()
 
@@ -70,7 +70,7 @@ class ObyteJsBalanceService(private val client: Client) : BalanceService {
 
 }
 
-class ObyteJsConfigurationService(client: Client) : ConfigurationService {
+private class ObyteJsConfigurationService(client: Client) : ConfigurationService {
 
     override val network = if (client.options["testnet"] as Boolean) "testnet" else "livenet"
     override val node = client.client.address
@@ -81,7 +81,7 @@ class ObyteJsConfigurationService(client: Client) : ConfigurationService {
     }
 }
 
-class ObyteJsBaseAgentService(private val client: Client) : BaseAgentService {
+private class ObyteJsBaseAgentService(private val client: Client) : BaseAgentService {
 
     override suspend fun getSubAgents(baseAgent: String): List<SubAgent> {
         val subAgents = client.api.getAasByBaseAas(GetAasByBaseAasRequest().apply {
@@ -100,7 +100,7 @@ class ObyteJsBaseAgentService(private val client: Client) : BaseAgentService {
     }
 }
 
-class ObyteJsAssetMetadataService(private val client: Client) : AssetMetadataService {
+private class ObyteJsAssetMetadataService(private val client: Client) : AssetMetadataService {
 
     private val registries = AssetRegistries(client)
 
