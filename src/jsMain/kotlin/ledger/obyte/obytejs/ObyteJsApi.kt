@@ -12,6 +12,7 @@ import ledger.obyte.BaseAgentService
 import ledger.obyte.ConfigurationService
 import ledger.obyte.ObyteApi
 import ledger.obyte.SubAgent
+import ledger.obyte.ValidationService
 
 class ObyteJsApi(
     obyte: Client,
@@ -21,7 +22,8 @@ class ObyteJsApi(
     AutonomousAgentService by ObyteJsAutonomousAgentService(obyte),
     BalanceService by ObyteJsBalanceService(obyte),
     BaseAgentService by ObyteJsBaseAgentService(obyte),
-    ConfigurationService by ObyteJsConfigurationService(obyte)
+    ConfigurationService by ObyteJsConfigurationService(obyte),
+    ValidationService by ObyteJsValidationService
 
 val Testnet by lazy {
     Client("wss://obyte.org/bb-test", mapOf("testnet" to true))
@@ -119,5 +121,13 @@ private class ObyteJsAssetMetadataService(private val client: Client) : AssetMet
                 description = ""
             )
         }
+    }
+}
+
+private object ObyteJsValidationService: ValidationService {
+    override fun validateAddress(address: String): ValidationService.ValidateAddressResult = when {
+        isValidAddress(address) -> ValidationService.ValidateAddressResult.Valid
+        address.length != 32 -> ValidationService.ValidateAddressResult.Invalid("Address must be 32 characters")
+        else -> ValidationService.ValidateAddressResult.Invalid("Not a valid Obyte address")
     }
 }

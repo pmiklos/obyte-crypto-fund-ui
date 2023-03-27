@@ -6,6 +6,8 @@ import fundlist.domain.FundType
 import fundlist.domain.FundTypeRepository
 import network.domain.ConnectionStatusRepository
 import network.domain.ExplorerRepository
+import wallet.domain.WalletValidation
+import wallet.domain.WalletValidationResult
 
 class ObyteBackend(obyteApi: ObyteApi) {
     val fundTypeRepository: FundTypeRepository = object : FundTypeRepository {
@@ -36,5 +38,13 @@ class ObyteBackend(obyteApi: ObyteApi) {
     val explorerRepository: ExplorerRepository = object : ExplorerRepository {
         override fun getAddressUrl(address: String) = obyteApi.explorerUrl(address)
         override fun getAssetUrl(asset: String) = obyteApi.explorerUrl(asset)
+    }
+
+    val walletValidation: WalletValidation = object : WalletValidation {
+        override fun validateWalletAddress(address: String): WalletValidationResult =
+            when (val result = obyteApi.validateAddress(address)) {
+                is ValidationService.ValidateAddressResult.Valid -> WalletValidationResult.Valid
+                is ValidationService.ValidateAddressResult.Invalid -> WalletValidationResult.Invalid(result.validationError)
+            }
     }
 }

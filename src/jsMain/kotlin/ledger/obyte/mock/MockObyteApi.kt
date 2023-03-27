@@ -12,6 +12,7 @@ import ledger.obyte.BaseAgentService
 import ledger.obyte.ConfigurationService
 import ledger.obyte.ObyteApi
 import ledger.obyte.SubAgent
+import ledger.obyte.ValidationService
 
 object MockObyteApi : ObyteApi,
     AddressDefinitionService by MockAddressDefinitionService,
@@ -19,9 +20,10 @@ object MockObyteApi : ObyteApi,
     AutonomousAgentService by MockAutonomousAgentService,
     BalanceService by MockBalanceService,
     BaseAgentService by MockBaseAgentService,
-    ConfigurationService by MockConfigurationService
+    ConfigurationService by MockConfigurationService,
+    ValidationService by MockValidationService
 
-object MockConfigurationService: ConfigurationService {
+object MockConfigurationService : ConfigurationService {
     override val network = "MockNet"
     override val node = "mock backend"
     override fun explorerUrl(unitOrAddress: String) = "#"
@@ -75,7 +77,8 @@ object MockAddressDefinitionService : AddressDefinitionService {
         when (address) {
             "V4KPOLQM2GB2EY4LTBLJHKC2MIVZNB5B" -> AddressDefinition(
                 type = "autonomous agent",
-                params = js("""{
+                params = js(
+                    """{
                         base_aa: "FTKLXQND4LS65OTQK7RXOABB7DENBSEI",
                         params: {
                             portfolio: [{
@@ -89,9 +92,11 @@ object MockAddressDefinitionService : AddressDefinitionService {
                     }"""
                 ).unsafeCast<Map<String, Any>>()
             )
+
             "FUND0000000000000000000000000002" -> AddressDefinition(
                 type = "autonomous agent",
-                params = js("""{
+                params = js(
+                    """{
                         base_aa: "FTKLXQND4LS65OTQK7RXOABB7DENBSEI",
                         params: {
                             portfolio: [{
@@ -128,5 +133,12 @@ object MockAutonomousAgentService : AutonomousAgentService {
             "asset" to "GFmWjNQKoJcRPdc5ms22/p14izrM5QUDWKPFoPRccV0=",
             "total_shares" to 873405271.toDouble()
         )
+    }
+}
+
+object MockValidationService : ValidationService {
+    override fun validateAddress(address: String) = when {
+        address.length != 32 -> ValidationService.ValidateAddressResult.Invalid("Address must be 32 characters")
+        else -> ValidationService.ValidateAddressResult.Valid
     }
 }

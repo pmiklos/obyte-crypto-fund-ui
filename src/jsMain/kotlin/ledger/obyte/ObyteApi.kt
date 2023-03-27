@@ -6,7 +6,8 @@ interface ObyteApi :
     AutonomousAgentService,
     BalanceService,
     BaseAgentService,
-    ConfigurationService
+    ConfigurationService,
+    ValidationService
 
 data class AssetMetadata(val ticker: String, val decimals: Int, val description: String)
 data class SubAgent(val address: String, val definition: AddressDefinition)
@@ -53,4 +54,14 @@ interface ConfigurationService {
     val network: String
     val node: String
     fun explorerUrl(unitOrAddress: String): String
+}
+
+interface ValidationService {
+
+    sealed class ValidateAddressResult {
+        object Valid: ValidateAddressResult()
+        data class Invalid(val validationError: String): ValidateAddressResult()
+    }
+
+    fun validateAddress(address: String): ValidateAddressResult
 }

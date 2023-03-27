@@ -33,6 +33,8 @@ kotlin {
                 implementation(compose.web.core)
                 implementation(compose.runtime)
                 implementation(npm("obyte", "0.1.23"))
+                implementation(devNpm("stream-browserify", "3.0.0"))
+                implementation(devNpm("buffer", "6.0.3"))
             }
         }
         val jsTest by getting {
