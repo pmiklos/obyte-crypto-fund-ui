@@ -22,9 +22,9 @@ import network.view.NetworkInfo
 import network.view.NetworkInfoViewModel
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.renderComposable
+import wallet.usecase.ValidateWalletAddressUseCase
 import wallet.view.WalletModel
 import wallet.view.WalletWidget
-import wallet.usecase.ValidateWalletAddressUseCase
 
 fun main() {
     val obyteApi = ObyteJsApi(Testnet)
@@ -43,8 +43,21 @@ fun main() {
 
     renderComposable(rootElementId = "root") {
         val navigator = Navigator(root = Screen.Home)
-        val walletModel = WalletModel(ValidateWalletAddressUseCase(obyte.walletValidation))
         val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase)
+        val fundDetailsViewModel = FundDetailsViewModel(
+            GetFundDetailsUseCase(fundDetailsRepository),
+            CalculateAssetPaymentUseCase,
+            GetAddressExplorerUseCase(explorerRepository),
+            GetAssetExplorerUseCase(explorerRepository),
+            CreateFundShareIssuanceUriUseCase(walletUriBuilder),
+            CreateAssetRedemptionUriUseCase(walletUriBuilder),
+            navigator
+        )
+        val walletModel = WalletModel(ValidateWalletAddressUseCase(obyte.walletValidation))
+
+        walletModel.onAddressChanged { address ->
+           fundDetailsViewModel.updateWalletAddress(address)
+        }
 
         PageHeader(title = "Crypto Funds") {
             NetworkInfo(NetworkInfoViewModel(getNetworkInfoUseCase))
@@ -56,17 +69,7 @@ fun main() {
                     FundList(fundListViewModel)
                 }
                 composable(Screen.Details) {
-                    FundDetails(
-                        FundDetailsViewModel(
-                            GetFundDetailsUseCase(fundDetailsRepository),
-                            CalculateAssetPaymentUseCase,
-                            GetAddressExplorerUseCase(explorerRepository),
-                            GetAssetExplorerUseCase(explorerRepository),
-                            CreateFundShareIssuanceUriUseCase(walletUriBuilder),
-                            CreateAssetRedemptionUriUseCase(walletUriBuilder),
-                            navigator
-                        )
-                    )
+                    FundDetails(fundDetailsViewModel)
                 }
             }
         }

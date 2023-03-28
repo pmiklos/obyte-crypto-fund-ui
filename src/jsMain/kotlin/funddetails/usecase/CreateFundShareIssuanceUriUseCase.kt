@@ -4,12 +4,14 @@ class CreateFundShareIssuanceUriUseCase(private val uriBuilder: ObyteWalletUriBu
 
     operator fun invoke(
         address: String,
+        fromAddress: String,
         fee: Long = 10_000L,
         assetPayments: Map<String, Long> = emptyMap()
     ) = uriBuilder.invoke(
         address,
         fee,
         ObyteWalletUriBuilder.Intent.ISSUE,
-        assetPayments
+        assetPayments,
+        fromAddress
     )
 }

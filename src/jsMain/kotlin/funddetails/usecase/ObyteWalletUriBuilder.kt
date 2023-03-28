@@ -22,7 +22,8 @@ class ObyteWalletUriBuilder(private val connectionStatusRepository: ConnectionSt
         address: String,
         fee: Long = 10_000L,
         intent: Intent,
-        assetPayments: Map<String, Long> = emptyMap()
+        assetPayments: Map<String, Long> = emptyMap(),
+        fromAddress: String? = null
     ): String {
         val data = when(intent) {
             Intent.ISSUE -> """{"intent":"issue"}"""
@@ -33,6 +34,11 @@ class ObyteWalletUriBuilder(private val connectionStatusRepository: ConnectionSt
         assetPayments.entries.forEachIndexed { index, (asset, amount) ->
             uri.append("&asset${index + 2}=${encodeURIComponent(asset)}")
             uri.append("&amount${index + 2}=$amount")
+        }
+        fromAddress?.let {
+            if (it.isNotBlank()) {
+                uri.append("&from_address=$it")
+            }
         }
         return uri.toString()
     }

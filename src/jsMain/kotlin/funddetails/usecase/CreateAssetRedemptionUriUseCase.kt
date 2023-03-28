@@ -4,6 +4,7 @@ class CreateAssetRedemptionUriUseCase(private val uriBuilder: ObyteWalletUriBuil
 
     operator fun invoke(
         address: String,
+        fromAddress: String,
         fee: Long = 10_000L,
         shareAsset: String,
         shareAmount: Long
@@ -11,6 +12,7 @@ class CreateAssetRedemptionUriUseCase(private val uriBuilder: ObyteWalletUriBuil
         address,
         fee,
         ObyteWalletUriBuilder.Intent.REDEEM,
-        mapOf(shareAsset to shareAmount)
+        mapOf(shareAsset to shareAmount),
+        fromAddress
     )
 }

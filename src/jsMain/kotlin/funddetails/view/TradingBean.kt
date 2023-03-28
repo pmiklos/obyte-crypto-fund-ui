@@ -15,13 +15,14 @@ data class TradingBean(
     val assetPaymentTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList()),
     val assetRedemptionTable: AssetPaymentTableBean = AssetPaymentTableBean(emptyList()),
     val assetPaymentUrl: String = "",
-    val assetRedemptionUrl: String = ""
+    val assetRedemptionUrl: String = "",
+    val walletAddress: String = ""
 ) {
     val sharesBuyable = sharesToBuy.toDoubleOrNull()?.run {
-        this > 0.0
+        this > 0.0 && walletAddress.isNotBlank()
     } ?: false
 
     val sharesRedeemable = sharesToRedeem.toDoubleOrNull()?.run {
-        this < totalShares.toDouble()
+        this < totalShares.toDouble() && walletAddress.isNotBlank()
     } ?: false
 }

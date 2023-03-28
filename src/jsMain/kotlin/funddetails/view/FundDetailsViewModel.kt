@@ -7,6 +7,7 @@ import common.movePointRight
 import funddetails.domain.Balance
 import funddetails.usecase.CalculateAssetPaymentUseCase
 import funddetails.usecase.CreateAssetRedemptionUriUseCase
+import funddetails.usecase.CreateFundShareIssuanceUriUseCase
 import funddetails.usecase.GetFundDetailsUseCase
 import funddetails.view.common.AddressBean
 import funddetails.view.common.AssetBean
@@ -20,7 +21,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import navigation.Navigator
-import funddetails.usecase.CreateFundShareIssuanceUriUseCase
 import network.usecase.GetAddressExplorerUseCase
 import network.usecase.GetAssetExplorerUseCase
 
@@ -134,6 +134,14 @@ class FundDetailsViewModel(
         return times(100).asDynamic().toFixed(2).toString() + "%"
     }
 
+    fun updateWalletAddress(address: String) = with(tradingState.value) {
+        _tradingState.value = copy(
+            walletAddress = address
+        )
+        updateAssetPayments(sharesToBuy)
+        updateRedemption(sharesToRedeem)
+    }
+
     fun updateAssetPayments(sharesToBuy: String) = with(tradingState.value) {
         val sharesToBuyAmount = sharesToBuy.toDoubleOrNull() ?: 0.0
         val assetPayments = calculateAssetPayment(allocation, totalShares, sharesToBuyAmount)
@@ -150,6 +158,7 @@ class FundDetailsViewModel(
             ),
             assetPaymentUrl = createFundShareIssuanceUri(
                 address = fundAddress,
+                fromAddress = walletAddress,
                 assetPayments = assetPayments.associate { it.asset.hash to it.amount }.toMap()
             )
         )
@@ -171,6 +180,7 @@ class FundDetailsViewModel(
             ),
             assetRedemptionUrl = createAssetRedemptionUri(
                 address = fundAddress,
+                fromAddress = walletAddress,
                 shareAsset = totalShares.asset.hash,
                 shareAmount = sharesToRedeemAmount.movePointRight(totalShares.asset.decimals).toLong()
             )

@@ -31,7 +31,7 @@ fun WalletWidget(
             classes("form-control")
             placeholder("Enter your wallet address")
             value(wallet.address)
-            onInput { event -> model.onAddressChanged(event.value) }
+            onInput { event -> model.updateAddress(event.value) }
             maxLength(32)
         }
         AddOn(
@@ -56,12 +56,26 @@ class WalletModel(
     private val validateWalletAddress: ValidateWalletAddressUseCase
 ) {
     private val _state = mutableStateOf(WalletBean())
+    private val listeners = mutableListOf<(String) -> Unit>()
     val state: State<WalletBean> = _state
 
-    fun onAddressChanged(address: String) {
+    fun updateAddress(address: String) {
+        val validationResult = validateWalletAddress(address)
         _state.value = _state.value.copy(
             address = address,
-            validation = validateWalletAddress(address)
+            validation = validationResult
         )
+        listeners.forEach { emit ->
+            emit(
+                when (validationResult) {
+                    WalletValidationResult.Valid -> address
+                    else -> ""
+                }
+            )
+        }
+    }
+
+    fun onAddressChanged(listener: (String) -> Unit) {
+        listeners.add(listener)
     }
 }
