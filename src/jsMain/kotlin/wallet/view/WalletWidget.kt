@@ -56,7 +56,7 @@ class WalletModel(
     private val validateWalletAddress: ValidateWalletAddressUseCase
 ) {
     private val _state = mutableStateOf(WalletBean())
-    private val listeners = mutableListOf<(String) -> Unit>()
+    private val _listener = mutableStateOf<(String) -> Unit>({ _ -> })
     val state: State<WalletBean> = _state
 
     fun updateAddress(address: String) {
@@ -65,17 +65,15 @@ class WalletModel(
             address = address,
             validation = validationResult
         )
-        listeners.forEach { emit ->
-            emit(
-                when (validationResult) {
-                    WalletValidationResult.Valid -> address
-                    else -> ""
-                }
-            )
-        }
+        _listener.value.invoke(
+            when (validationResult) {
+                WalletValidationResult.Valid -> address
+                else -> ""
+            }
+        )
     }
 
     fun onAddressChanged(listener: (String) -> Unit) {
-        listeners.add(listener)
+        _listener.value = listener
     }
 }

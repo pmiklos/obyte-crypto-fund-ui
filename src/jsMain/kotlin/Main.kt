@@ -44,20 +44,7 @@ fun main() {
     renderComposable(rootElementId = "root") {
         val navigator = Navigator(root = Screen.Home)
         val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase)
-        val fundDetailsViewModel = FundDetailsViewModel(
-            GetFundDetailsUseCase(fundDetailsRepository),
-            CalculateAssetPaymentUseCase,
-            GetAddressExplorerUseCase(explorerRepository),
-            GetAssetExplorerUseCase(explorerRepository),
-            CreateFundShareIssuanceUriUseCase(walletUriBuilder),
-            CreateAssetRedemptionUriUseCase(walletUriBuilder),
-            navigator
-        )
         val walletModel = WalletModel(ValidateWalletAddressUseCase(obyte.walletValidation))
-
-        walletModel.onAddressChanged { address ->
-           fundDetailsViewModel.updateWalletAddress(address)
-        }
 
         PageHeader(title = "Crypto Funds") {
             NetworkInfo(NetworkInfoViewModel(getNetworkInfoUseCase))
@@ -69,6 +56,19 @@ fun main() {
                     FundList(fundListViewModel)
                 }
                 composable(Screen.Details) {
+                    val fundDetailsViewModel = FundDetailsViewModel(
+                        GetFundDetailsUseCase(fundDetailsRepository),
+                        CalculateAssetPaymentUseCase,
+                        GetAddressExplorerUseCase(explorerRepository),
+                        GetAssetExplorerUseCase(explorerRepository),
+                        CreateFundShareIssuanceUriUseCase(walletUriBuilder),
+                        CreateAssetRedemptionUriUseCase(walletUriBuilder),
+                        navigator
+                    )
+                    // TODO how to handle interaction between global walletModel and fundDetailsViewModel?
+                    walletModel.onAddressChanged { address ->
+                        fundDetailsViewModel.updateWalletAddress(address)
+                    }
                     FundDetails(fundDetailsViewModel)
                 }
             }
