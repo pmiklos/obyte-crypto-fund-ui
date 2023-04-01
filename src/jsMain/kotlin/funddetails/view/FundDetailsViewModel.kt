@@ -144,7 +144,7 @@ class FundDetailsViewModel(
 
     fun updateAssetPayments(sharesToBuy: String) = with(tradingState.value) {
         val sharesToBuyAmount = sharesToBuy.toDoubleOrNull() ?: 0.0
-        val assetPayments = calculateAssetPayment(allocation, totalShares, sharesToBuyAmount)
+        val assetPayments = calculateAssetPayment(allocation, sharesToBuyAmount)
 
         _tradingState.value = copy(
             sharesToBuy = sharesToBuy,
@@ -166,7 +166,7 @@ class FundDetailsViewModel(
 
     fun updateRedemption(sharesToRedeem: String) = with(tradingState.value) {
         val sharesToRedeemAmount = sharesToRedeem.toDoubleOrNull() ?: 0.0
-        val assetRedemption = calculateAssetPayment(allocation, totalShares, sharesToRedeemAmount)
+        val assetRedemption = calculateAssetPayment(allocation, sharesToRedeemAmount)
 
         _tradingState.value = copy(
             sharesToRedeem = sharesToRedeem,
