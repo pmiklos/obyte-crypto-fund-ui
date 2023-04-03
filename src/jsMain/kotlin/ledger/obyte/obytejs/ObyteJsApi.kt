@@ -1,6 +1,10 @@
 package ledger.obyte.obytejs
 
+import kotlin.js.Promise
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.await
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.launch
 import ledger.obyte.AddressDefinition
 import ledger.obyte.AddressDefinitionService
 import ledger.obyte.AssetMetadata
@@ -107,24 +111,36 @@ private class ObyteJsAssetMetadataService(private val client: Client) : AssetMet
     private val registries = AssetRegistries(client)
 
     override suspend fun getAssetMetadata(assetHash: String): AssetMetadata {
-        val registryUnit = client.api.getAssetMetadata(assetHash).await()
-        val metadataJoint = client.api.getJoint(registryUnit.metadata_unit).await()
-        val registry = registries[registryUnit.registry_address]
-
-        return try {
-            registry.getAssetMetadata(metadataJoint.joint.unit)
-        } catch (e: Exception) {
-            console.log(e)
-            AssetMetadata(
-                ticker = assetHash,
-                decimals = 0,
-                description = ""
-            )
-        }
+        val coroutineContext = currentCoroutineContext()
+        // using messy Promise api because .await() did not throw proper exception on errors eg. no asset metadata
+        return client.api.getAssetMetadata(assetHash)
+            .then { registryUnit ->
+                client.api.getJoint(registryUnit.metadata_unit)
+                    .then { metadataJoint ->
+                        val registry = registries[registryUnit.registry_address]
+                        Pair(registry, metadataJoint.joint.unit)
+                    }
+            }.then { (registry, metadataUnit) ->
+                Promise { resolve, _ ->
+                    CoroutineScope(coroutineContext).launch {
+                        val assetMetadata = registry.getAssetMetadata(metadataUnit)
+                        resolve(assetMetadata)
+                    }
+                }
+            }
+            .catch {
+                console.error("ERROR: getting asset metadata for $assetHash: $it")
+                AssetMetadata(
+                    ticker = assetHash.substring(0, 6),
+                    decimals = 0,
+                    description = ""
+                )
+            }
+            .await()
     }
 }
 
-private object ObyteJsValidationService: ValidationService {
+private object ObyteJsValidationService : ValidationService {
     override fun validateAddress(address: String): ValidationService.ValidateAddressResult = when {
         isValidAddress(address) -> ValidationService.ValidateAddressResult.Valid
         address.length != 32 -> ValidationService.ValidateAddressResult.Invalid("Address must be 32 characters")

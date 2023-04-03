@@ -1,6 +1,5 @@
 package ledger.obyte
 
-import androidx.compose.runtime.derivedStateOf
 import fundlist.domain.Fund
 import fundlist.domain.FundListRepository
 import fundlist.domain.FundType
@@ -22,21 +21,22 @@ class ObyteFundListRepository(
             val state = autonomousAgentService.getState(subAgent.address)
             val asset = state["asset"] as String?
 
-            val assetMetadata = asset?.run {
-                assetMetadataService.getAssetMetadata(asset)
+            if (asset == null) {
+                console.log("INFO: Found uninitialized fund: ${subAgent.address}")
+            } else {
+                val assetMetadata = assetMetadataService.getAssetMetadata(asset)
+                emit(Fund(
+                    address = subAgent.address,
+                    assetName = assetMetadata.ticker,
+                    description = assetMetadata.description,
+                    portfolio = fundDefinition.portfolio.map { item ->
+                        Portfolio(
+                            assetName = assetMetadataService.getAssetMetadata(item.asset).ticker,
+                            percentage = item.percentage
+                        )
+                    }
+                ))
             }
-
-            emit(Fund(
-                address = subAgent.address,
-                assetName = assetMetadata?.ticker ?: "Uninitialized",
-                description = assetMetadata?.description ?: "",
-                portfolio = fundDefinition.portfolio.map { item ->
-                    Portfolio(
-                        assetName = assetMetadataService.getAssetMetadata(item.asset).ticker,
-                        percentage = item.percentage
-                    )
-                }
-            ))
         }
     }
 
