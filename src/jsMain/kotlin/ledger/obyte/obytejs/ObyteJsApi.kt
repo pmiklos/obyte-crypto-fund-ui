@@ -1,10 +1,14 @@
 package ledger.obyte.obytejs
 
 import kotlin.js.Promise
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.await
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import ledger.obyte.AddressDefinition
 import ledger.obyte.AddressDefinitionService
 import ledger.obyte.AssetMetadata
@@ -30,12 +34,18 @@ class ObyteJsApi(
     ValidationService by ObyteJsValidationService
 
 val Testnet by lazy {
-    Client("wss://obyte.org/bb-test", mapOf("testnet" to true))
+    Client(
+        "wss://obyte.org/bb-test", mapOf(
+            "testnet" to true
+        )
+    )
 }
 
 private class ObyteJsAddressDefinitionService(private val client: Client) : AddressDefinitionService {
     override suspend fun getDefinitionForAddress(address: String): AddressDefinition {
-        val response = client.api.getDefinition(address).await()
+        val response = client.withRetry {
+            api.getDefinition(address).await(7.seconds)
+        }
 
         return AddressDefinition(
             type = response[0] as String,
@@ -46,17 +56,25 @@ private class ObyteJsAddressDefinitionService(private val client: Client) : Addr
 
 private class ObyteJsAutonomousAgentService(private val client: Client) : AutonomousAgentService {
     override suspend fun getState(address: String): Map<String, Any?> {
-        val vars = client.api.getAaStateVars(GetAaStateVarsRequest().apply {
-            this.address = address
-        }).await()
-
-        return jsObjectToMap(vars)
+        console.log("In getState", currentCoroutineContext())
+        try {
+            val vars = client.withRetry {
+                api.getAaStateVars(GetAaStateVarsRequest().apply {
+                    this.address = address
+                }).await(7.seconds)
+            }
+            return jsObjectToMap(vars)
+        } finally {
+            console.log("After getAaStateVars", currentCoroutineContext())
+        }
     }
 }
 
 private class ObyteJsBalanceService(private val client: Client) : BalanceService {
     override suspend fun getBalances(addresses: List<String>): Map<String, Map<String, Balance>> {
-        val balances = client.api.getBalances(addresses.toTypedArray()).await()
+        val balances = client.withRetry {
+            api.getBalances(addresses.toTypedArray()).await(7.seconds)
+        }
 
         return (js("Object.entries") as (dynamic) -> Array<Array<Any?>>)
             .invoke(balances)
@@ -90,9 +108,11 @@ private class ObyteJsConfigurationService(client: Client) : ConfigurationService
 private class ObyteJsBaseAgentService(private val client: Client) : BaseAgentService {
 
     override suspend fun getSubAgents(baseAgent: String): List<SubAgent> {
-        val subAgents = client.api.getAasByBaseAas(GetAasByBaseAasRequest().apply {
-            base_aa = baseAgent
-        }).await()
+        val subAgents = client.withRetry {
+            api.getAasByBaseAas(GetAasByBaseAasRequest().apply {
+                base_aa = baseAgent
+            }).await(7.seconds)
+        }
 
         return subAgents.map {
             SubAgent(
@@ -110,12 +130,12 @@ private class ObyteJsAssetMetadataService(private val client: Client) : AssetMet
 
     private val registries = AssetRegistries(client)
 
-    override suspend fun getAssetMetadata(assetHash: String): AssetMetadata {
+    override suspend fun getAssetMetadata(assetHash: String): AssetMetadata = client.withRetry {
         val coroutineContext = currentCoroutineContext()
         // using messy Promise api because .await() did not throw proper exception on errors eg. no asset metadata
-        return client.api.getAssetMetadata(assetHash)
+        api.getAssetMetadata(assetHash)
             .then { registryUnit ->
-                client.api.getJoint(registryUnit.metadata_unit)
+                api.getJoint(registryUnit.metadata_unit)
                     .then { metadataJoint ->
                         val registry = registries[registryUnit.registry_address]
                         Pair(registry, metadataJoint.joint.unit)
@@ -136,7 +156,7 @@ private class ObyteJsAssetMetadataService(private val client: Client) : AssetMet
                     description = ""
                 )
             }
-            .await()
+            .await(7.seconds)
     }
 }
 
@@ -146,4 +166,20 @@ private object ObyteJsValidationService : ValidationService {
         address.length != 32 -> ValidationService.ValidateAddressResult.Invalid("Address must be 32 characters")
         else -> ValidationService.ValidateAddressResult.Invalid("Not a valid Obyte address")
     }
+}
+
+private suspend fun <T> Client.withRetry(timingOutBlock: suspend Client.() -> T): T {
+    repeat(3) {
+        try {
+            return timingOutBlock(this)
+        } catch (e: TimeoutCancellationException) {
+            client.close()
+            client.connect()
+        }
+    }
+    throw RuntimeException("Timed out, no more retries")
+}
+
+private suspend fun <T> Promise<T>.await(timeout: Duration): T = withTimeout(timeout) {
+    await()
 }

@@ -13,6 +13,8 @@ external class Client(nodeAddress: String, options: Map<String, Any>) {
 external interface WSClient {
     val address: String
     val open: Boolean
+    fun close()
+    fun connect()
 }
 
 external interface Api {
