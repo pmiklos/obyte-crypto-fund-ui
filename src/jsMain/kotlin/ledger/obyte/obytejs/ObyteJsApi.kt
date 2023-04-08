@@ -56,17 +56,12 @@ private class ObyteJsAddressDefinitionService(private val client: Client) : Addr
 
 private class ObyteJsAutonomousAgentService(private val client: Client) : AutonomousAgentService {
     override suspend fun getState(address: String): Map<String, Any?> {
-        console.log("In getState", currentCoroutineContext())
-        try {
-            val vars = client.withRetry {
-                api.getAaStateVars(GetAaStateVarsRequest().apply {
-                    this.address = address
-                }).await(7.seconds)
-            }
-            return jsObjectToMap(vars)
-        } finally {
-            console.log("After getAaStateVars", currentCoroutineContext())
+        val vars = client.withRetry {
+            api.getAaStateVars(GetAaStateVarsRequest().apply {
+                this.address = address
+            }).await(7.seconds)
         }
+        return jsObjectToMap(vars)
     }
 }
 
