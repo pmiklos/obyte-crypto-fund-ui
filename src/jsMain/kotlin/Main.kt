@@ -48,7 +48,10 @@ fun main() {
 
         PageHeader(title = "Crypto Funds") {
             NetworkInfo(NetworkInfoViewModel(getNetworkInfoUseCase))
-            WalletWidget(walletModel)
+            WalletWidget(
+                wallet = walletModel.state.value,
+                onAddressChanged = walletModel::updateAddress
+            )
         }
         Main {
             NavHost(navigator) {

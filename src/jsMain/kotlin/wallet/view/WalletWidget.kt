@@ -16,11 +16,10 @@ import wallet.usecase.ValidateWalletAddressUseCase
 
 @Composable
 fun WalletWidget(
-    model: WalletModel,
+    wallet: WalletBean,
+    onAddressChanged: (String) -> Unit = {},
     attrs: AttrsScope<HTMLDivElement>.() -> Unit = {}
 ) {
-    val wallet = model.state.value
-
     InputGroup(
         attrs = attrs
     ) {
@@ -31,7 +30,7 @@ fun WalletWidget(
             classes("form-control")
             placeholder("Enter your wallet address")
             value(wallet.address)
-            onInput { event -> model.updateAddress(event.value) }
+            onInput { event -> onAddressChanged(event.value) }
             maxLength(32)
         }
         AddOn(
