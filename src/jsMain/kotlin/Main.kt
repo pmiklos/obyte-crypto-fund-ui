@@ -1,3 +1,4 @@
+import browser.LocalStorageRepository
 import funddetails.usecase.CalculateAssetPaymentUseCase
 import funddetails.usecase.CreateAssetRedemptionUriUseCase
 import funddetails.usecase.CreateFundShareIssuanceUriUseCase
@@ -41,13 +42,15 @@ fun main() {
     val getFundsUseCase = GetFundsUseCase(fundListRepository)
     val getNetworkInfoUseCase = GetNetworkInfoUseCase(connectionStatusRepository)
 
+    val navigator = Navigator(root = Screen.Home)
+    val walletModel = WalletModel(LocalStorageRepository, ValidateWalletAddressUseCase(obyte.walletValidation))
+    val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase)
+    val networkInfoViewModel = NetworkInfoViewModel(getNetworkInfoUseCase)
+
     renderComposable(rootElementId = "root") {
-        val navigator = Navigator(root = Screen.Home)
-        val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase)
-        val walletModel = WalletModel(ValidateWalletAddressUseCase(obyte.walletValidation))
 
         PageHeader(title = "Crypto Funds") {
-            NetworkInfo(NetworkInfoViewModel(getNetworkInfoUseCase))
+            NetworkInfo(networkInfoViewModel)
             WalletWidget(
                 wallet = walletModel.state.value,
                 onAddressChanged = walletModel::updateAddress

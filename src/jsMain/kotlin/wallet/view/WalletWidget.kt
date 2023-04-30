@@ -11,6 +11,7 @@ import org.jetbrains.compose.web.attributes.maxLength
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.dom.Input
 import org.w3c.dom.HTMLDivElement
+import wallet.domain.WalletRepository
 import wallet.domain.WalletValidationResult
 import wallet.usecase.ValidateWalletAddressUseCase
 
@@ -52,11 +53,16 @@ data class WalletBean(
 )
 
 class WalletModel(
+    private val walletRepository: WalletRepository,
     private val validateWalletAddress: ValidateWalletAddressUseCase
 ) {
     private val _state = mutableStateOf(WalletBean())
     private val _listener = mutableStateOf<(String) -> Unit>({ _ -> })
     val state: State<WalletBean> = _state
+
+    init {
+        updateAddress(walletRepository.getWallet())
+    }
 
     fun updateAddress(address: String) {
         val validationResult = validateWalletAddress(address)
@@ -64,12 +70,14 @@ class WalletModel(
             address = address,
             validation = validationResult
         )
-        _listener.value.invoke(
-            when (validationResult) {
-                WalletValidationResult.Valid -> address
-                else -> ""
-            }
-        )
+
+        if (validationResult == WalletValidationResult.Valid) {
+            walletRepository.setWallet(address)
+            _listener.value.invoke(address)
+        } else {
+            walletRepository.removeWallet()
+            _listener.value.invoke("")
+        }
     }
 
     fun onAddressChanged(listener: (String) -> Unit) {
