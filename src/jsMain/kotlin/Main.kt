@@ -46,6 +46,17 @@ fun main() {
     val walletModel = WalletModel(LocalStorageRepository, ValidateWalletAddressUseCase(obyte.walletValidation))
     val fundListViewModel = FundListViewModel(getFundTypesUseCase, getFundsUseCase)
     val networkInfoViewModel = NetworkInfoViewModel(getNetworkInfoUseCase)
+    val fundDetailsViewModel = FundDetailsViewModel(
+        GetFundDetailsUseCase(fundDetailsRepository),
+        CalculateAssetPaymentUseCase,
+        GetAddressExplorerUseCase(explorerRepository),
+        GetAssetExplorerUseCase(explorerRepository),
+        CreateFundShareIssuanceUriUseCase(walletUriBuilder),
+        CreateAssetRedemptionUriUseCase(walletUriBuilder)
+    )
+    walletModel.onAddressChanged { address ->
+        fundDetailsViewModel.updateWalletAddress(address)
+    }
 
     renderComposable(rootElementId = "root") {
 
@@ -58,23 +69,10 @@ fun main() {
         }
         Main {
             NavHost(navigator) {
-                composable(Screen.Home) {
+                composable(screen = Screen.Home) {
                     FundList(fundListViewModel)
                 }
-                composable(Screen.Details) {
-                    val fundDetailsViewModel = FundDetailsViewModel(
-                        GetFundDetailsUseCase(fundDetailsRepository),
-                        CalculateAssetPaymentUseCase,
-                        GetAddressExplorerUseCase(explorerRepository),
-                        GetAssetExplorerUseCase(explorerRepository),
-                        CreateFundShareIssuanceUriUseCase(walletUriBuilder),
-                        CreateAssetRedemptionUriUseCase(walletUriBuilder),
-                        navigator
-                    )
-                    // TODO how to handle interaction between global walletModel and fundDetailsViewModel?
-                    walletModel.onAddressChanged { address ->
-                        fundDetailsViewModel.updateWalletAddress(address)
-                    }
+                composable(screen = Screen.Details, onActivated = fundDetailsViewModel::loadFund) {
                     FundDetails(fundDetailsViewModel)
                 }
             }

@@ -14,16 +14,23 @@ fun NavHost(navigator: Navigator, navigations: NavHostBuilder.() -> Unit) {
 
     val builder = remember { NavHostBuilder() }
     navigations(builder)
-    builder[navigator.route]?.invoke()
+
+    builder[navigator.route]?.let {
+        it.onActivated(navigator.param)
+        it.composable.invoke()
+    }
 }
 
 class NavHostBuilder {
-    private val composables = mutableMapOf<String, @Composable () -> Unit>()
 
-    fun composable(navigable: Navigable, composable: @Composable () -> Unit) {
-        composables[navigable.route] = composable
+    data class RouteConfiguration(val onActivated: (String?) -> Unit = {}, val composable: @Composable () -> Unit)
+
+    private val routes = mutableMapOf<String, RouteConfiguration>()
+
+    fun composable(screen: Navigable, onActivated: (String?) -> Unit = {}, composable: @Composable () -> Unit) {
+        routes[screen.route] = RouteConfiguration(onActivated, composable)
     }
 
-    operator fun get(route: String) = composables[route]
+    operator fun get(route: String) = routes[route]
 }
 

@@ -20,7 +20,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import navigation.Navigator
 import network.usecase.GetAddressExplorerUseCase
 import network.usecase.GetAssetExplorerUseCase
 
@@ -30,8 +29,7 @@ class FundDetailsViewModel(
     private val getAddressExplorer: GetAddressExplorerUseCase,
     private val getAssetExplorer: GetAssetExplorerUseCase,
     private val createFundShareIssuanceUri: CreateFundShareIssuanceUriUseCase,
-    private val createAssetRedemptionUri: CreateAssetRedemptionUriUseCase,
-    navigator: Navigator,
+    private val createAssetRedemptionUri: CreateAssetRedemptionUriUseCase
 ) {
 
     private val _fundDetailsState = mutableStateOf(FundDetailsState())
@@ -40,14 +38,14 @@ class FundDetailsViewModel(
     val fundDetailState: State<FundDetailsState> = _fundDetailsState
     val tradingState: State<TradingBean> = _tradingState
 
-    init {
+    fun loadFund(address: String?) {
         CoroutineScope(Job()).launch {
-            initializeFundDetails(navigator.param, this)
+            initializeFundDetails(address, this)
         }.start()
     }
 
     private fun initializeFundDetails(address: String?, coroutineScope: CoroutineScope) {
-        if (address == null) {
+        if (address == null || address.isBlank()) {
             _fundDetailsState.value = FundDetailsState(error = "No crypto fund address")
             return
         }
