@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import common.Resource
 import common.movePointRight
 import funddetails.domain.Balance
+import funddetails.domain.WalletRepository
 import funddetails.usecase.CalculateAssetPaymentUseCase
 import funddetails.usecase.CreateAssetRedemptionUriUseCase
 import funddetails.usecase.CreateFundShareIssuanceUriUseCase
@@ -29,8 +30,8 @@ class FundDetailsViewModel(
     private val getAddressExplorer: GetAddressExplorerUseCase,
     private val getAssetExplorer: GetAssetExplorerUseCase,
     private val createFundShareIssuanceUri: CreateFundShareIssuanceUriUseCase,
-    private val createAssetRedemptionUri: CreateAssetRedemptionUriUseCase
-) {
+    private val createAssetRedemptionUri: CreateAssetRedemptionUriUseCase,
+    private val walletRepository: WalletRepository) {
 
     private val _fundDetailsState = mutableStateOf(FundDetailsState())
     private val _tradingState = mutableStateOf(TradingBean())
@@ -95,6 +96,7 @@ class FundDetailsViewModel(
                                     )
                                 )
                             _tradingState.value = TradingBean(
+                                walletAddress = walletRepository.getWallet(),
                                 fundAddress = fundDetails.address,
                                 sharesToBuy = "",
                                 shareSymbol = fundDetails.totalShares.asset.name,

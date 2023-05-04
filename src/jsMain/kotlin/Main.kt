@@ -52,14 +52,15 @@ fun main() {
         GetAddressExplorerUseCase(explorerRepository),
         GetAssetExplorerUseCase(explorerRepository),
         CreateFundShareIssuanceUriUseCase(walletUriBuilder),
-        CreateAssetRedemptionUriUseCase(walletUriBuilder)
+        CreateAssetRedemptionUriUseCase(walletUriBuilder),
+        LocalStorageRepository
     )
+
     walletModel.onAddressChanged { address ->
         fundDetailsViewModel.updateWalletAddress(address)
     }
 
     renderComposable(rootElementId = "root") {
-
         PageHeader(title = "Crypto Funds") {
             NetworkInfo(networkInfoViewModel)
             WalletWidget(
