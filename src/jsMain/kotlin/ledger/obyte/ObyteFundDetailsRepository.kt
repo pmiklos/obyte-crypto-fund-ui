@@ -24,6 +24,7 @@ class ObyteFundDetailsRepository(
 
         return FundDetails(
             address = address,
+            description = shareAssetMetadata.description,
             totalShares = Balance(Asset(shareAsset, shareAssetMetadata.ticker, shareAssetMetadata.decimals), sharesIssued),
             allocation = fundDefinition.portfolio.map {
                 val assetMetadata = assetMetadataService.getAssetMetadata(it.asset)

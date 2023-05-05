@@ -4,6 +4,7 @@ import common.movePointLeft
 
 data class FundDetails(
     val address: String,
+    val description: String,
     val totalShares: Balance,
     val allocation: List<AssetAllocation>
 ) {

@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import bootstrap.AddOn
 import bootstrap.ButtonBlock
 import bootstrap.ButtonLinkPrimary
-import bootstrap.ButtonPrimary
 import bootstrap.Card
 import bootstrap.CardBody
 import bootstrap.CardHeader
@@ -22,10 +21,10 @@ import compose.Dl
 import compose.Dt
 import funddetails.view.component.AssetAllocationTable
 import funddetails.view.component.AssetPaymentTable
-import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Form
+import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
@@ -63,6 +62,9 @@ private fun FundInformationPane(fundDetails: FundDetailsBean) {
             Text("Fund Information")
         }
         CardBody {
+            P {
+               Text(fundDetails.description)
+            }
             Dl {
                 Dt {
                     Text("Fund Address")

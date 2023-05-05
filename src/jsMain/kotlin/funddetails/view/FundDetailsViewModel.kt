@@ -72,6 +72,7 @@ class FundDetailsViewModel(
                                             value = fundDetails.address,
                                             explorerUrl = getAddressExplorer(fundDetails.address)
                                         ),
+                                        description = fundDetails.description,
                                         totalShares = fundDetails.totalShares.toFormattedNumber(),
                                         shareAsset = AssetBean(
                                             hash = fundDetails.totalShares.asset.hash,
