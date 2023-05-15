@@ -19,8 +19,15 @@ import wallet.usecase.ValidateWalletAddressUseCase
 fun WalletWidget(
     wallet: WalletBean,
     onAddressChanged: (String) -> Unit = {},
-    attrs: AttrsScope<HTMLDivElement>.() -> Unit = {}
+    attrs: AttrsScope<HTMLDivElement>.() -> Unit = {},
+    addOns: @Composable () -> Unit = {}
 ) {
+    val border = when (wallet.validation) {
+        is WalletValidationResult.Empty -> "border-warning"
+        is WalletValidationResult.Invalid -> "border-danger"
+        is WalletValidationResult.Valid -> "border-secondary-subtle"
+    }
+
     InputGroup(
         attrs = attrs
     ) {
@@ -28,22 +35,14 @@ fun WalletWidget(
         Input(
             type = InputType.Text
         ) {
-            classes("form-control")
+            classes("form-control", border)
             placeholder("Enter your wallet address")
             value(wallet.address)
             onInput { event -> onAddressChanged(event.value) }
             maxLength(32)
+            title(wallet.validation.description)
         }
-        AddOn(
-            text = when (wallet.validation) {
-                is WalletValidationResult.Empty -> "⚫"
-                is WalletValidationResult.Invalid -> "🔴"
-                is WalletValidationResult.Valid -> "🟢"
-            },
-            attrs = {
-                title(wallet.validation.description)
-            }
-        )
+        addOns()
     }
 }
 

@@ -7,7 +7,9 @@ import org.w3c.dom.HTMLElement
 
 enum class Icon(val cssClass: String) {
 
-    BOX_ARROW_UP_RIGHT("bi-box-arrow-up-right")
+    BOX_ARROW_UP_RIGHT("bi-box-arrow-up-right"),
+    BAR_CHART("bi-bar-chart"),
+    BAR_CHART_FILL("bi-bar-chart-fill"),
     ;
 
 }

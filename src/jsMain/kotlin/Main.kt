@@ -62,11 +62,12 @@ fun main() {
 
     renderComposable(rootElementId = "root") {
         PageHeader(title = "Crypto Funds") {
-            NetworkInfo(networkInfoViewModel)
             WalletWidget(
                 wallet = walletModel.state.value,
                 onAddressChanged = walletModel::updateAddress
-            )
+            ) {
+                NetworkInfo(networkInfoViewModel)
+            }
         }
         Main {
             NavHost(navigator) {

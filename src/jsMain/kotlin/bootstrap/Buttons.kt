@@ -46,6 +46,17 @@ fun ButtonOutlineInfo(
 }
 
 @Composable
+fun ButtonOutlineSecondary(
+    attrs: AttrBuilderContext<HTMLButtonElement>? = null,
+    content: ContentBuilder<HTMLButtonElement>? = null
+) {
+    Button(attrs = {
+        classes("btn", "btn-outline-secondary")
+        attrs?.invoke(this)
+    }, content = content)
+}
+
+@Composable
 fun ButtonBlock(
     attrs: AttrBuilderContext<HTMLDivElement>? = null,
     content: ContentBuilder<HTMLDivElement>? = null

@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import bootstrap.ButtonOutlineInfo
+import bootstrap.ButtonOutlineSecondary
+import bootstrap.Icon
 import common.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -13,7 +15,6 @@ import kotlinx.coroutines.launch
 import network.usecase.GetNetworkInfoUseCase
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Br
-import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Hr
 import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Text
@@ -24,39 +25,43 @@ fun NetworkInfo(
     networkInfoViewModel: NetworkInfoViewModel
 ) {
     val networkInfo = networkInfoViewModel.state.value
-    Div(attrs = { classes("btn-group") }) {
-        ButtonOutlineInfo(attrs = {
-            classes("mb-3", "me-1", "dropdown-toggle")
-            attr("data-bs-toggle", "dropdown")
-            attr("aria-expanded", "false")
-        }) {
-            Text(networkInfo.network)
+    ButtonOutlineSecondary(attrs = {
+        classes("dropdown-toggle")
+        attr("data-bs-toggle", "dropdown")
+        attr("aria-expanded", "false")
+    }) {
+        if (networkInfo.error.isNotBlank()) {
+            Icon(Icon.BAR_CHART, attrs = {
+                classes("text-danger")
+            })
+        } else {
+            Icon(Icon.BAR_CHART_FILL)
         }
-        Ul(
-            attrs = { classes("dropdown-menu") }
-        ) {
-            networkInfo.links.forEach { (label, uri) ->
-                Li {
-                    A(href = uri, attrs = { classes("dropdown-item") }) {
-                        Text(label)
-                    }
+    }
+    Ul(
+        attrs = { classes("dropdown-menu", "dropdown-menu-end") }
+    ) {
+        networkInfo.links.forEach { (label, uri) ->
+            Li {
+                A(href = uri, attrs = { classes("dropdown-item") }) {
+                    Text(label)
                 }
             }
+        }
 
-            if (!networkInfo.links.isEmpty()) {
-                Li {
-                    Hr(attrs = { classes("dropdown-divider") })
-                }
+        if (!networkInfo.links.isEmpty()) {
+            Li {
+                Hr(attrs = { classes("dropdown-divider") })
             }
+        }
 
-            Li(attrs = { classes("dropdown-item") }) {
-                if (networkInfo.error.isNotBlank()) {
-                    Text(networkInfo.error)
-                } else {
-                    Text(networkInfo.description)
-                    Br()
-                    Text("Connected to ${networkInfo.node}")
-                }
+        Li(attrs = { classes("dropdown-item") }) {
+            if (networkInfo.error.isNotBlank()) {
+                Text(networkInfo.error)
+            } else {
+                Text(networkInfo.description)
+                Br()
+                Text("Connected to ${networkInfo.node}")
             }
         }
     }
