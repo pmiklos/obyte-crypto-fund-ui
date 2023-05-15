@@ -1,6 +1,5 @@
 import androidx.compose.runtime.Composable
-import network.view.NetworkInfo
-import org.jetbrains.compose.web.dom.Div
+import bootstrap.FlexResponsive
 import org.jetbrains.compose.web.dom.H4
 import org.jetbrains.compose.web.dom.Header
 import org.jetbrains.compose.web.dom.Text
@@ -13,21 +12,15 @@ fun PageHeader(
     Header(attrs = {
         classes("pb-3")
     }) {
-        Div(
-            attrs = { classes("d-flex", "flex-column", "flex-md-row") }
-        ) {
-            H4(
-                attrs = { classes("d-flex") }
-            ) {
-                Text(title)
-            }
-            Div(
-                attrs = {
-                    classes("d-flex", "ms-md-auto", "w-auto")
+        FlexResponsive(
+            left = {
+                H4 {
+                    Text(title)
                 }
-            ) {
+            },
+            right = {
                 controls()
             }
-        }
+        )
     }
 }

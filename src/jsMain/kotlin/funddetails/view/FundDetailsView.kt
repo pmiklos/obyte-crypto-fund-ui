@@ -8,6 +8,8 @@ import bootstrap.Card
 import bootstrap.CardBody
 import bootstrap.CardHeader
 import bootstrap.Col
+import bootstrap.Flex
+import bootstrap.Icon
 import bootstrap.InputGroup
 import bootstrap.NavTab
 import bootstrap.NavTabs
@@ -23,8 +25,9 @@ import funddetails.view.component.AssetAllocationTable
 import funddetails.view.component.AssetPaymentTable
 import org.jetbrains.compose.web.attributes.placeholder
 import org.jetbrains.compose.web.dom.A
+import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Form
-import org.jetbrains.compose.web.dom.P
+import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
@@ -33,10 +36,10 @@ fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
 
     state.fundDetails?.let { fundDetails ->
         Row {
-            Col(6) {
+            Col(8) {
                 FundInformationPane(fundDetails)
             }
-            Col(6) {
+            Col(4) {
                 TradingPane(
                     tradingState = fundDetailsViewModel.tradingState.value,
                     onPurchaseAmountChange = { fundDetailsViewModel.updateAssetPayments(it) },
@@ -57,37 +60,47 @@ fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
 
 @Composable
 private fun FundInformationPane(fundDetails: FundDetailsBean) {
-    Card {
-        CardHeader {
-            Text("Fund Information")
-        }
-        CardBody {
-            P {
-               Text(fundDetails.description)
+    Div(
+        attrs = {
+            classes("mb-3", "p-3", "bg-body-tertiary", "rounded")
+            style {
+                property("--bs-bg-opacity", "0.5")
             }
-            Dl {
-                Dt {
-                    Text("Fund Address")
+        }
+    ) {
+        Flex(
+            left = {
+                H2 {
+                    Text(fundDetails.shareAsset.symbol)
                 }
-                Dd {
-                    A(href = fundDetails.address.explorerUrl) {
-                        Text(fundDetails.address.value)
-                    }
-                }
-                Dt {
-                    Text("Total Shares")
-                }
-                Dd {
-                    Text(fundDetails.totalShares + " ")
-                    A(href = fundDetails.shareAsset.explorerUrl) {
-                        Text(fundDetails.shareAsset.symbol)
-                    }
+            },
+            right = {
+                A(href = fundDetails.address.explorerUrl) {
+                    Icon(Icon.BOX_ARROW_UP_RIGHT)
                 }
             }
-            AssetAllocationTable(
-                fundDetails.allocationTable
-            )
+        )
+
+        Dl {
+            Dt {
+                Text("Fund Description")
+            }
+            Dd {
+                Text(fundDetails.description)
+            }
+            Dt {
+                Text("Total Shares")
+            }
+            Dd {
+                Text(fundDetails.totalShares + " ")
+                A(href = fundDetails.shareAsset.explorerUrl) {
+                    Text(fundDetails.shareAsset.symbol)
+                }
+            }
         }
+        AssetAllocationTable(
+            fundDetails.allocationTable
+        )
     }
 }
 
