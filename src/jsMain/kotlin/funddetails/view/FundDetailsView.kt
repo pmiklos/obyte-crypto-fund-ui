@@ -23,7 +23,9 @@ import compose.Dl
 import compose.Dt
 import funddetails.view.component.AssetAllocationTable
 import funddetails.view.component.AssetPaymentTable
+import org.jetbrains.compose.web.attributes.ATarget
 import org.jetbrains.compose.web.attributes.placeholder
+import org.jetbrains.compose.web.attributes.target
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Form
@@ -75,7 +77,9 @@ private fun FundInformationPane(fundDetails: FundDetailsBean) {
                 }
             },
             right = {
-                A(href = fundDetails.address.explorerUrl) {
+                A(href = fundDetails.address.explorerUrl, attrs = {
+                    target(ATarget.Blank)
+                }){
                     Icon(Icon.BOX_ARROW_UP_RIGHT)
                 }
             }
@@ -93,7 +97,9 @@ private fun FundInformationPane(fundDetails: FundDetailsBean) {
             }
             Dd {
                 Text(fundDetails.totalShares + " ")
-                A(href = fundDetails.shareAsset.explorerUrl) {
+                A(href = fundDetails.shareAsset.explorerUrl, attrs = {
+                    target(ATarget.Blank)
+                }) {
                     Text(fundDetails.shareAsset.symbol)
                 }
             }

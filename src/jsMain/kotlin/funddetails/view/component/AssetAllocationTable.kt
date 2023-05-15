@@ -2,6 +2,8 @@ package funddetails.view.component
 
 import androidx.compose.runtime.Composable
 import funddetails.view.common.AssetBean
+import org.jetbrains.compose.web.attributes.ATarget
+import org.jetbrains.compose.web.attributes.target
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Table
 import org.jetbrains.compose.web.dom.Tbody
@@ -33,7 +35,9 @@ fun AssetAllocationTable(model: AssetAllocationTableBean) {
             model.allocations.forEach { allocation ->
                 Tr {
                     Td {
-                        A(href=allocation.asset.explorerUrl) {
+                        A(href=allocation.asset.explorerUrl, attrs = {
+                            target(ATarget.Blank)
+                        }) {
                             Text(allocation.asset.symbol)
                         }
                     }
