@@ -18,11 +18,23 @@ data class TradingBean(
     val assetRedemptionUrl: String = "",
     val walletAddress: String = ""
 ) {
+
+    val invalidPurchaseAmount = sharesToBuy.toDoubleOrNull()?.run {
+        this <= 0.0
+    } ?: false
+
     val sharesBuyable = sharesToBuy.toDoubleOrNull()?.run {
         this > 0.0 && walletAddress.isNotBlank()
     } ?: false
 
-    val sharesRedeemable = sharesToRedeem.toDoubleOrNull()?.run {
-        this < totalShares.toDouble() && walletAddress.isNotBlank()
+    val invalidRedemptionAmount = sharesToRedeem.toDoubleOrNull()?.run {
+        this <= 0.0 || this > totalShares.toDouble()
     } ?: false
+
+    val sharesRedeemable = sharesToRedeem.toDoubleOrNull()?.run {
+        this > 0.0 && this <= totalShares.toDouble() && walletAddress.isNotBlank()
+    } ?: false
+
+    val missingWallet = walletAddress.isBlank()
+
 }

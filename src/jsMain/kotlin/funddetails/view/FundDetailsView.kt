@@ -25,6 +25,7 @@ import funddetails.view.component.AssetAllocationTable
 import funddetails.view.component.AssetPaymentTable
 import org.jetbrains.compose.web.attributes.ATarget
 import org.jetbrains.compose.web.attributes.placeholder
+import org.jetbrains.compose.web.attributes.readOnly
 import org.jetbrains.compose.web.attributes.target
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Div
@@ -148,8 +149,18 @@ private fun BuySharesPane(
                 placeholder("Shares to buy")
                 value(tradingState.sharesToBuy)
                 onInput { onPurchaseAmountChange(it.value) }
+                if (tradingState.invalidPurchaseAmount) {
+                    classes("border-danger")
+                }
+                if (tradingState.missingWallet) {
+                    readOnly()
+                }
             }
             AddOn(tradingState.shareSymbol)
+        }
+
+        if (tradingState.missingWallet) {
+            MissingWalletWarning()
         }
 
         AssetPaymentTable(tradingState.assetPaymentTable, label = "Payable")
@@ -177,11 +188,18 @@ private fun RedemptionPane(
                 placeholder("Shares to redeem")
                 value(tradingState.sharesToRedeem)
                 onInput { onRedemptionAmountChange(it.value) }
-                if (!tradingState.sharesRedeemable) {
-                    classes("text-danger")
+                if (tradingState.invalidRedemptionAmount) {
+                    classes("border-danger")
+                }
+                if (tradingState.missingWallet) {
+                    readOnly()
                 }
             }
             AddOn(tradingState.shareSymbol)
+        }
+
+        if (tradingState.missingWallet) {
+            MissingWalletWarning()
         }
 
         AssetPaymentTable(tradingState.assetRedemptionTable, label = "Redeemable")
@@ -195,5 +213,12 @@ private fun RedemptionPane(
                 Text("Redeem Assets")
             }
         }
+    }
+}
+
+@Composable
+private fun MissingWalletWarning() {
+    Div(attrs = { classes("form-text") }) {
+        Text("Please connect your wallet to buy shares.")
     }
 }

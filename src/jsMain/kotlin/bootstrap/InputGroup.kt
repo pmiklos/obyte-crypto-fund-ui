@@ -17,7 +17,7 @@ fun InputGroup(
 ) {
     Div(
         attrs = {
-            classes("input-group", "mb-3")
+            classes("input-group")
             attrs?.invoke(this)
         }, content = content
     )
