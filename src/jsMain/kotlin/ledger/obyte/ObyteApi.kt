@@ -54,6 +54,7 @@ interface ConfigurationService {
     val network: String
     val node: String
     fun explorerUrl(unitOrAddress: String): String
+    fun assetExplorerUrl(unit: String): String
 }
 
 interface ValidationService {

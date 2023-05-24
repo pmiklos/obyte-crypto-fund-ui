@@ -98,6 +98,12 @@ private class ObyteJsConfigurationService(client: Client) : ConfigurationService
         "livenet" -> "https://explorer.obyte.org/#${unitOrAddress}"
         else -> "#"
     }
+
+    override fun assetExplorerUrl(unit: String): String = when (network) {
+        "testnet" -> "https://testnetexplorer.obyte.org/asset/${unit}"
+        "livenet" -> "https://explorer.obyte.org/asset/${unit}"
+        else -> "#"
+    }
 }
 
 private class ObyteJsBaseAgentService(private val client: Client) : BaseAgentService {

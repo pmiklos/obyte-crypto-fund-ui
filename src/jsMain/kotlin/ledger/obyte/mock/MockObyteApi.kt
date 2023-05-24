@@ -27,6 +27,7 @@ object MockConfigurationService : ConfigurationService {
     override val network = "MockNet"
     override val node = "mock backend"
     override fun explorerUrl(unitOrAddress: String) = "#"
+    override fun assetExplorerUrl(unit: String) = "#"
 }
 
 object MockAssetMetadataService : AssetMetadataService {

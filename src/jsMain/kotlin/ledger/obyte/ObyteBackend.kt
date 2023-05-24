@@ -37,7 +37,7 @@ class ObyteBackend(obyteApi: ObyteApi) {
 
     val explorerRepository: ExplorerRepository = object : ExplorerRepository {
         override fun getAddressUrl(address: String) = obyteApi.explorerUrl(address)
-        override fun getAssetUrl(asset: String) = obyteApi.explorerUrl(asset)
+        override fun getAssetUrl(asset: String) = obyteApi.assetExplorerUrl(asset)
     }
 
     val walletValidation: WalletValidation = object : WalletValidation {
