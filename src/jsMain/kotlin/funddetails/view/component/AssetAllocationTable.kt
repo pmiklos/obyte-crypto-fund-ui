@@ -24,7 +24,7 @@ fun AssetAllocationTable(model: AssetAllocationTableBean) {
                     Text("Asset")
                 }
                 Th {
-                    Text("Allocation")
+                    Text("Weight")
                 }
                 Th {
                     Text("Balance")
