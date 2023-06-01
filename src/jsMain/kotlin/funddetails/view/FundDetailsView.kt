@@ -219,6 +219,6 @@ private fun RedemptionPane(
 @Composable
 private fun MissingWalletWarning() {
     Div(attrs = { classes("form-text") }) {
-        Text("Please connect your wallet to buy shares.")
+        Text("Connect your wallet to buy or redeem shares.")
     }
 }
