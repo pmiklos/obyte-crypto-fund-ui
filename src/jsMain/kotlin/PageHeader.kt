@@ -1,6 +1,12 @@
 import androidx.compose.runtime.Composable
-import bootstrap.FlexResponsive
-import org.jetbrains.compose.web.dom.H4
+import bootstrap.NavBar
+import bootstrap.NavBarBrand
+import bootstrap.NavBarCollapse
+import bootstrap.NavBarNav
+import bootstrap.NavBarNavItem
+import bootstrap.NavBarNavLink
+import bootstrap.NavBarToggler
+import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Header
 import org.jetbrains.compose.web.dom.Text
 
@@ -12,15 +18,23 @@ fun PageHeader(
     Header(attrs = {
         classes("pb-3")
     }) {
-        FlexResponsive(
-            left = {
-                H4 {
-                    Text(title)
+        NavBar {
+            NavBarBrand {
+                Text(title)
+            }
+            NavBarToggler()
+            NavBarCollapse {
+                NavBarNav {
+                    NavBarNavItem {
+                        NavBarNavLink("#") {
+                            Text("Home")
+                        }
+                    }
                 }
-            },
-            right = {
+            }
+            Div (attrs = {classes("d-flex", "pt-3")}) {
                 controls()
             }
-        )
+        }
     }
 }
