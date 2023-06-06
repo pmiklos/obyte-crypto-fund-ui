@@ -6,6 +6,7 @@ import bootstrap.NavBarNav
 import bootstrap.NavBarNavItem
 import bootstrap.NavBarNavLink
 import bootstrap.NavBarToggler
+import navigation.Screen
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Header
 import org.jetbrains.compose.web.dom.Text
@@ -26,8 +27,13 @@ fun PageHeader(
             NavBarCollapse {
                 NavBarNav {
                     NavBarNavItem {
-                        NavBarNavLink("#") {
+                        NavBarNavLink(Screen.Home.href) {
                             Text("Home")
+                        }
+                    }
+                    NavBarNavItem {
+                        NavBarNavLink(Screen.Faq.href) {
+                            Text("F.A.Q")
                         }
                     }
                 }

@@ -1,4 +1,5 @@
 import browser.LocalStorageRepository
+import faq.view.Faq
 import funddetails.usecase.CalculateAssetPaymentUseCase
 import funddetails.usecase.CreateAssetRedemptionUriUseCase
 import funddetails.usecase.CreateFundShareIssuanceUriUseCase
@@ -76,6 +77,9 @@ fun main() {
                 }
                 composable(screen = Screen.Details, onActivated = fundDetailsViewModel::loadFund) {
                     FundDetails(fundDetailsViewModel)
+                }
+                composable(screen = Screen.Faq) {
+                    Faq()
                 }
             }
         }
