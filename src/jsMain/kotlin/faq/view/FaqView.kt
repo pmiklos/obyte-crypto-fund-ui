@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import bootstrap.Accordion
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.H3
+import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Text
+import org.jetbrains.compose.web.dom.Ul
 
 @Composable
 fun Faq() {
@@ -34,18 +36,35 @@ fun Faq() {
                 |Shares are issued proportionate to the assets sent to the fund, 
                 |and shares can be returned to the fund to redeem the underlying assets in the same proportion.
                 |Using the previous example, if a user sends 1 share to the fund, then they will receive 0.01 BTC and 0.1 ETH.
-                |The fund shares can be traded on decentralized exchanges (DEXes) and stored in crypto wallets.""".trimMargin()
+                |The fund shares can be traded on decentralized exchanges and stored in crypto wallets.""".trimMargin()
             )
         }
-        item(title = "How can I buy Fund Shares?") {
+        item(title = "Where can I buy Fund Shares?") {
             Text(
-                """Fund shares can be bought either directly from the fund or on secondary exchanges. 
+                """Fund shares can be bought either directly from the fund in this app or on secondary exchanges. 
                 |When buying shares directly from the fund, the payment is made in the underlying assets
                 |in the required proportion defined by the fund. 
                 |When purchasing shares on secondary markets, the payment is made in the quote currency. 
                 |For example, if an exchange lists the Fund Share in USDC coins, one can buy shares in USDC.
+                |Popular decentralized exchanges on Obyte:
                 |""".trimMargin()
             )
+            Ul {
+                Li {
+                    A(href = "https://odex.ooo") { Text("Odex") }
+                    Text(
+                        """ - a community-owned decentralized exchange where trades are settled directly 
+                            |between the two exchanging parties without any intermediate""".trimMargin()
+                    )
+                }
+                Li {
+                    A(href = "https://oswap.io") { Text("Oswap") }
+                    Text(
+                        """ - a decentralized exchange that enables users to swap tokens 
+                            |using liquidity pools instead of traditional order books.""".trimMargin()
+                    )
+                }
+            }
         }
         item(title = "What blockchain does Crypto Funds use?") {
             Text(
@@ -59,6 +78,17 @@ fun Faq() {
             A(href = "https://blog.obyte.org/dag-vs-blockchain-6d2d99f10bd9") {
                 Text("Learn more about DAG vs Blockchain.")
             }
+        }
+        item(title = "What assets can I hold in a Crypto Fund?") {
+            Text(
+                """Crypto Funds supports all assets that are available on the Obyte platform. 
+                |This includes those issued by users as well as the ones issued by autonomous agents
+                |such as coins imported from other chains via """.trimMargin()
+            )
+            A(href = "https://counterstake.org") { Text("Counterstake") }
+            Text(" such as ETH, WBTC or BNB or algorithmic stablecoins issued via ")
+            A(href = "https://ostable.org") { Text("Ostable") }
+            Text(" such as OUSD.")
         }
     }
 }
