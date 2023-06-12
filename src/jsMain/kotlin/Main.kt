@@ -12,6 +12,7 @@ import fundlist.usecase.GetFundsUseCase
 import fundlist.view.FundList
 import fundlist.view.FundListViewModel
 import ledger.obyte.ObyteBackend
+import ledger.obyte.cached
 import ledger.obyte.obytejs.ObyteJsApi
 import ledger.obyte.obytejs.Testnet
 import navigation.NavHost
@@ -30,7 +31,7 @@ import wallet.view.WalletWidget
 
 fun main() {
     val obyteApi = ObyteJsApi(Testnet)
-    val obyte = ObyteBackend(obyteApi)
+    val obyte = ObyteBackend(obyteApi.cached())
 
     val fundTypeRepository = obyte.fundTypeRepository
     val fundListRepository = obyte.fundListRepository
