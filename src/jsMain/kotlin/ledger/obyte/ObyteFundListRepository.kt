@@ -17,13 +17,13 @@ class ObyteFundListRepository(
         val subAgents = baseAgentService.getSubAgents(fundType.address)
 
         subAgents.forEach { subAgent ->
-            val fundDefinition = subAgent.definition.asFundDefinition()
             val state = autonomousAgentService.getState(subAgent.address)
             val asset = state["asset"] as String?
 
             if (asset == null) {
                 console.log("INFO: Found uninitialized fund: ${subAgent.address}")
             } else {
+                val fundDefinition = subAgent.definition.asFundDefinition()
                 val assetMetadata = assetMetadataService.getAssetMetadata(asset)
                 emit(Fund(
                     address = subAgent.address,
