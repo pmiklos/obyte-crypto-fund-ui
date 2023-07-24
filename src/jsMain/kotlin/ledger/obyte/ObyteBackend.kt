@@ -16,6 +16,11 @@ class ObyteBackend(obyteApi: ObyteApi) {
                 address = "FTKLXQND4LS65OTQK7RXOABB7DENBSEI",
                 description = "Two-asset fixed allocation fund",
                 version = "0.0.1"
+            ),
+            FundType(
+                address = "IQ7OZ2J2Y76BXO7GRESDN7BS2WDH5J67",
+                description = "Two-asset fixed allocation fund",
+                version = "0.0.2"
             )
         )
     }
