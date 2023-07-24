@@ -6,6 +6,8 @@ import fundlist.domain.FundTypeRepository
 class GetFundTypesUseCase(private val fundTypeRepository: FundTypeRepository) {
 
     suspend operator fun invoke(): List<FundType> {
-        return fundTypeRepository.getFundTypes()
+        return fundTypeRepository.getFundTypes().sortedWith(
+            compareByDescending(FundType::version).thenBy(FundType::address)
+        )
     }
 }
