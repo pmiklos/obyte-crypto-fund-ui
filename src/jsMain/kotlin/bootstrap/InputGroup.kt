@@ -35,7 +35,3 @@ fun AddOn(text: String, attrs: AttrBuilderContext<HTMLSpanElement>? = null) {
     }
 }
 
-@Composable
-fun DropdownEnd() {
-
-}

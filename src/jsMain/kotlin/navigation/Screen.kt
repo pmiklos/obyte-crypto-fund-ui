@@ -1,12 +1,12 @@
 package navigation
 
 sealed class Screen(override val route: String): Navigable {
-    object Home : Screen("home") {
-        val href = "#"
+    data object Home : Screen("home") {
+        const val href = "#"
     }
-    object Details: Screen("details")
-    object Faq: Screen("faq") {
-        val href = "#faq"
+    data object Details: Screen("details")
+    data object Faq: Screen("faq") {
+        const val href = "#faq"
     }
 
     fun href(param: String) = "#$route/$param"

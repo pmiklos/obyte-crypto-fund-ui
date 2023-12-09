@@ -16,7 +16,7 @@ package ledger.obyte
  *      }]
 </pre>
  */
-data class FundDefinition(val baseAa: String, val portfolio: List<PortfolioItem>) {}
+data class FundDefinition(val baseAa: String, val portfolio: List<PortfolioItem>)
 
 data class PortfolioItem(val asset: String, val percentage: Double)
 

@@ -46,7 +46,7 @@ class FundDetailsViewModel(
     }
 
     private fun initializeFundDetails(address: String?, coroutineScope: CoroutineScope) {
-        if (address == null || address.isBlank()) {
+        if (address.isNullOrBlank()) {
             _fundDetailsState.value = FundDetailsState(error = "No crypto fund address")
             return
         }

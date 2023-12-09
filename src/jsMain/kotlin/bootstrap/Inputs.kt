@@ -9,6 +9,6 @@ import org.jetbrains.compose.web.dom.Input
 fun TextInput(attrs: InputAttrsScope<String>.() -> Unit) {
     Input(type = InputType.Text, attrs = {
         classes("form-control")
-        attrs?.invoke(this)
+        attrs.invoke(this)
     })
 }

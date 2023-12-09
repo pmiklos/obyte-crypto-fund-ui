@@ -60,7 +60,7 @@ interface ConfigurationService {
 interface ValidationService {
 
     sealed class ValidateAddressResult {
-        object Valid: ValidateAddressResult()
+        data object Valid: ValidateAddressResult()
         data class Invalid(val validationError: String): ValidateAddressResult()
     }
 

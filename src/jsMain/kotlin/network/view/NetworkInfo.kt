@@ -3,7 +3,6 @@ package network.view
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import bootstrap.ButtonOutlineInfo
 import bootstrap.ButtonOutlineSecondary
 import bootstrap.Icon
 import common.Resource
@@ -49,7 +48,7 @@ fun NetworkInfo(
             }
         }
 
-        if (!networkInfo.links.isEmpty()) {
+        if (networkInfo.links.isNotEmpty()) {
             Li {
                 Hr(attrs = { classes("dropdown-divider") })
             }

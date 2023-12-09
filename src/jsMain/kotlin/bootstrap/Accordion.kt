@@ -32,7 +32,7 @@ class AccordionBuilder(private val accordionId: String) {
     }
 
     private fun String.cssIdentifier(): String {
-        return this.replace(" ", "-").replace("[^a-zA-Z0-9-]".toRegex(), "").toLowerCase()
+        return this.replace(" ", "-").replace("[^a-zA-Z0-9-]".toRegex(), "").lowercase()
     }
 }
 

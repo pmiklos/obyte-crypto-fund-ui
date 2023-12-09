@@ -133,7 +133,7 @@ private class ObyteJsAssetMetadataService(private val client: Client) : AssetMet
 
     override suspend fun getAssetMetadata(assetHash: String): AssetMetadata = client.withRetry {
         val coroutineContext = currentCoroutineContext()
-        // using messy Promise api because .await() did not throw proper exception on errors eg. no asset metadata
+        // using messy Promise api because .await() did not throw proper exception on errors, e.g. no asset metadata
         api.getAssetMetadata(assetHash)
             .then { registryUnit ->
                 api.getJoint(registryUnit.metadata_unit)
