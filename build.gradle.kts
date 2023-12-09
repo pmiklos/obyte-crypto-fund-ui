@@ -1,5 +1,3 @@
-import org.jetbrains.compose.compose
-
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -30,7 +28,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(compose.web.core)
+                implementation(compose.html.core)
                 implementation(compose.runtime)
                 implementation(npm("obyte", "0.1.23"))
                 implementation(devNpm("stream-browserify", "3.0.0"))
