@@ -35,7 +35,7 @@ import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
-    val state = fundDetailsViewModel.fundDetailState.value
+    val state = fundDetailsViewModel.fundDetailsState
 
     state.fundDetails?.let { fundDetails ->
         Row {
@@ -44,7 +44,7 @@ fun FundDetails(fundDetailsViewModel: FundDetailsViewModel) {
             }
             Col(4) {
                 TradingPane(
-                    tradingState = fundDetailsViewModel.tradingState.value,
+                    tradingState = fundDetailsViewModel.tradingState,
                     onPurchaseAmountChange = { fundDetailsViewModel.updateAssetPayments(it) },
                     onRedemptionAmountChange = { fundDetailsViewModel.updateRedemption(it) },
                 )

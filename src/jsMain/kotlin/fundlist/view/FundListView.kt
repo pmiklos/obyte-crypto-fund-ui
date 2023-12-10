@@ -14,7 +14,7 @@ import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun FundList(viewModel: FundListViewModel) {
-    val state = viewModel.state.value
+    val state = viewModel.state
     val funds = viewModel.funds
     ListGroup {
         funds.forEach { fund ->

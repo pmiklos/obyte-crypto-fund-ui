@@ -1,7 +1,9 @@
 package funddetails.view
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import common.Resource
 import common.movePointRight
 import funddetails.domain.Balance
@@ -33,11 +35,11 @@ class FundDetailsViewModel(
     private val createAssetRedemptionUri: CreateAssetRedemptionUriUseCase,
     private val walletRepository: WalletRepository) {
 
-    private val _fundDetailsState = mutableStateOf(FundDetailsState())
-    private val _tradingState = mutableStateOf(TradingBean())
+    var fundDetailsState by mutableStateOf(FundDetailsState())
+        private set
 
-    val fundDetailState: State<FundDetailsState> = _fundDetailsState
-    val tradingState: State<TradingBean> = _tradingState
+    var tradingState by mutableStateOf(TradingBean())
+        private set
 
     fun loadFund(address: String?) {
         CoroutineScope(Job()).launch {
@@ -47,7 +49,7 @@ class FundDetailsViewModel(
 
     private fun initializeFundDetails(address: String?, coroutineScope: CoroutineScope) {
         if (address.isNullOrBlank()) {
-            _fundDetailsState.value = FundDetailsState(error = "No crypto fund address")
+            fundDetailsState = FundDetailsState(error = "No crypto fund address")
             return
         }
 
@@ -56,16 +58,16 @@ class FundDetailsViewModel(
                 console.log(result)
                 when (result) {
                     is Resource.Loading -> {
-                        _fundDetailsState.value = FundDetailsState(isLoading = true)
+                        fundDetailsState = FundDetailsState(isLoading = true)
                     }
 
                     is Resource.Error -> {
-                        _fundDetailsState.value = FundDetailsState(error = result.message ?: "Unexpected error")
+                        fundDetailsState = FundDetailsState(error = result.message ?: "Unexpected error")
                     }
 
                     is Resource.Success -> {
                         result.data?.let { fundDetails ->
-                            _fundDetailsState.value =
+                            fundDetailsState =
                                 FundDetailsState(
                                     fundDetails = FundDetailsBean(
                                         address = AddressBean(
@@ -96,7 +98,7 @@ class FundDetailsViewModel(
                                         )
                                     )
                                 )
-                            _tradingState.value = TradingBean(
+                            tradingState = TradingBean(
                                 walletAddress = walletRepository.getWallet(),
                                 fundAddress = fundDetails.address,
                                 sharesToBuy = "",
@@ -135,19 +137,19 @@ class FundDetailsViewModel(
         return times(100).asDynamic().toFixed(2).toString() + "%"
     }
 
-    fun updateWalletAddress(address: String) = with(tradingState.value) {
-        _tradingState.value = copy(
+    fun updateWalletAddress(address: String) = with(tradingState) {
+        tradingState = copy(
             walletAddress = address
         )
         updateAssetPayments(sharesToBuy)
         updateRedemption(sharesToRedeem)
     }
 
-    fun updateAssetPayments(sharesToBuy: String) = with(tradingState.value) {
+    fun updateAssetPayments(sharesToBuy: String) = with(tradingState) {
         val sharesToBuyAmount = sharesToBuy.toDoubleOrNull() ?: 0.0
         val assetPayments = calculateAssetPayment(allocation, sharesToBuyAmount)
 
-        _tradingState.value = copy(
+        tradingState = copy(
             sharesToBuy = sharesToBuy,
             assetPaymentTable = AssetPaymentTableBean(
                 assetPayments = assetPayments.map { payment ->
@@ -165,11 +167,11 @@ class FundDetailsViewModel(
         )
     }
 
-    fun updateRedemption(sharesToRedeem: String) = with(tradingState.value) {
+    fun updateRedemption(sharesToRedeem: String) = with(tradingState) {
         val sharesToRedeemAmount = sharesToRedeem.toDoubleOrNull() ?: 0.0
         val assetRedemption = calculateAssetPayment(allocation, sharesToRedeemAmount)
 
-        _tradingState.value = copy(
+        tradingState = copy(
             sharesToRedeem = sharesToRedeem,
             assetRedemptionTable = AssetPaymentTableBean(
                 assetPayments = assetRedemption.map { redemption ->
