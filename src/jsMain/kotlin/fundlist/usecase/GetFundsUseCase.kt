@@ -1,31 +1,27 @@
 package fundlist.usecase
 
 import common.Resource
-import fundlist.domain.FundType
 import fundlist.domain.Fund
 import fundlist.domain.FundListRepository
+import fundlist.domain.FundType
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
 
 class GetFundsUseCase(
     private val fundListRepository: FundListRepository
 ) {
 
-    operator fun invoke(fundType: FundType): Flow<Resource<List<Fund>>> = flow {
-        emit(Resource.Loading())
+    operator fun invoke(fundType: FundType): Flow<Resource<Fund>> = flow {
+        val funds = fundListRepository.getFunds(fundType)
 
-        fundListRepository
-            .getFunds(fundType)
-            .onEach {
-                emit(Resource.Success(listOf(it)))
-            }
-            .catch {
-                console.error(it)
-                emit(Resource.Error(it.message))
-            }
-            .collect()
+        funds.forEach { address ->
+            emit(Resource.Loading(Fund(address)))
+        }
+
+        funds.forEach { address ->
+            fundListRepository.getFundSummary(address)?.let {
+                emit(Resource.Success(it))
+            } ?: emit(Resource.Error("Not initialized", Fund(address)))
+        }
     }
 }

@@ -8,6 +8,7 @@ import bootstrap.ListGroupItemHeading
 import bootstrap.Warning
 import navigation.Screen
 import org.jetbrains.compose.web.attributes.href
+import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Small
 import org.jetbrains.compose.web.dom.Text
@@ -18,18 +19,10 @@ fun FundList(viewModel: FundListViewModel) {
     val funds = viewModel.funds
     ListGroup {
         funds.forEach { fund ->
-            ListGroupItem(
-                attrs = {
-                    href(Screen.Details.href(fund.address))
-                }
-            ) {
-                ListGroupItemHeading(fund.summary, fund.version)
-                P(attrs = {
-                    classes("mb-1")
-                }) {
-                    Text(fund.description)
-                }
-                Small { Text(fund.address) }
+            if (fund.valid) {
+                FundSummary(fund)
+            } else {
+                InvalidFundSummary(fund)
             }
         }
     }
@@ -41,3 +34,42 @@ fun FundList(viewModel: FundListViewModel) {
     }
 }
 
+@Composable
+private fun FundSummary(fund: FundSummaryBean) {
+    ListGroupItem(
+        attrs = {
+            href(Screen.Details.href(fund.address))
+        }
+    ) {
+        ListGroupItemHeading(fund.summary, fund.version)
+        P(attrs = {
+            classes("mb-1")
+        }) {
+            Text(fund.description)
+        }
+        Small { Text(fund.address) }
+
+        if (fund.loading) {
+            IndefiniteProgressBar()
+        }
+    }
+}
+
+@Composable
+private fun InvalidFundSummary(fund: FundSummaryBean) {
+    ListGroupItem {
+        P(attrs = {
+            classes("mb-1")
+        }) {
+            Text(fund.error)
+        }
+        Small { Text(fund.address) }
+    }
+}
+
+@Composable
+private fun IndefiniteProgressBar() {
+    Div(attrs = { classes("progress-bar") }) {
+        Div(attrs = { classes("progress-bar-value") })
+    }
+}
